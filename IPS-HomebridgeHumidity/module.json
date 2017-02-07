@@ -1,0 +1,11 @@
+{
+	"id": "{E6D35A51-E56F-4D63-BA79-CF37872ACC9A}",
+	"name": "IPS_HomebridgeHumidity",
+	"type": 3,
+	"vendor": "",
+	"aliases": ["IPS_HomebridgeHumidity"],
+	"parentRequirements": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
+	"childRequirements": [],
+	"implemented": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}"],
+	"prefix": "HBHumidity"
+}

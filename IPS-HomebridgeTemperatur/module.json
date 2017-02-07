@@ -1,0 +1,11 @@
+{
+	"id": "{8B06C3D7-314F-4A43-B05C-89A27BA2D0C6}",
+	"name": "IPS_HomebridgeTemperatur",
+	"type": 3,
+	"vendor": "",
+	"aliases": ["IPS_HomebridgeTemperatur"],
+	"parentRequirements": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
+	"childRequirements": [],
+	"implemented": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}"],
+	"prefix": "HBtEMPERATUR"
+}
