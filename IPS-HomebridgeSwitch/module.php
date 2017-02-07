@@ -130,7 +130,7 @@ class IPS_HomebridgeSwitch extends IPSModule {
         $variableObject = IPS_GetObject($this->ReadPropertyInteger("VariableState{$count}"));
         //Geräte Variable setzen
         if ($SwitchDummyOptional == true) {
-          SetValue(IPS_GetVariable($this->ReadPropertyInteger("VariableState{$count}"), $result);
+          SetValue($variable, $result);
         } else {
           IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
         }
