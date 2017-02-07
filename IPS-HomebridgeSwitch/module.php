@@ -13,7 +13,7 @@ class IPS_HomebridgeSwitch extends IPSModule {
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($SwitchID, 0);
         $this->RegisterPropertyInteger($VariableState, 0);
-        $this->RegisterPropertyInteger($SwitchDummyOptional, false);
+        $this->RegisterPropertyBoolean($SwitchDummyOptional, false);
         $this->SetBuffer($DeviceName." Switch ".$VariableState,"");
       }
   }
@@ -129,8 +129,9 @@ class IPS_HomebridgeSwitch extends IPSModule {
         $result = $this->ConvertVariable($variable, $state);
         $variableObject = IPS_GetObject($this->ReadPropertyInteger("VariableState{$count}"));
         //Geräte Variable setzen
+        $SwitchDummyOptionalValue = $this->ReadPropertyBoolean($SwitchDummyOptional);
         if ($SwitchDummyOptional == true) {
-          SetValue($variable, $result);
+          SetValue($variable["SelectVariable"], $result);
         } else {
           IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
         }
