@@ -9,9 +9,11 @@ class IPS_HomebridgeSwitch extends IPSModule {
         $DeviceName = "DeviceName{$count}";
         $SwitchID = "SwitchID{$count}";
         $VariableState = "VariableState{$count}";
+        $SwitchDummyOptional = "SwitchDummyOptional{$count}";
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($SwitchID, 0);
         $this->RegisterPropertyInteger($VariableState, 0);
+        $this->RegisterPropertyInteger($SwitchDummyOptional, false);
         $this->SetBuffer($DeviceName." Switch ".$VariableState,"");
       }
   }
@@ -67,6 +69,8 @@ class IPS_HomebridgeSwitch extends IPSModule {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "SwitchID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableState'.$count.'", "caption": "Status (Characteristic .On)" },';
+      $form .= '{ "type": "Label", "label": "Soll eine eigene Variable geschaltet werden?" },';
+      $form .= '{ "type": "CheckBox", "name": "SwitchDummyOptional'.$count.'", "caption": "Ja" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
@@ -100,7 +104,7 @@ class IPS_HomebridgeSwitch extends IPSModule {
       //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
       if ($DeviceName == $this->ReadPropertyString("DeviceName{$count}")) {
         //IPS Variable abfragen
-        $result1 = GetValue($this->ReadPropertyInteger("$VariableState"));
+        $result1 = GetValue($this->ReadPropertyInteger($VariableState));
         $result = ($result1) ? 'true' : 'false';
         $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
         $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
@@ -117,6 +121,7 @@ class IPS_HomebridgeSwitch extends IPSModule {
       //Hochzählen der Konfirgurationsform Variablen
       $SwitchID = "SwitchID{$count}";
       $VariableState = "VariableState{$count}";
+      $SwitchDummyOptional = "SwitchDummyOptional{$count}";
       //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
       if ($DeviceName == $this->ReadPropertyString("DeviceName{$count}")) {
         $variable = IPS_GetVariable($this->ReadPropertyInteger("VariableState{$count}"));
@@ -124,7 +129,11 @@ class IPS_HomebridgeSwitch extends IPSModule {
         $result = $this->ConvertVariable($variable, $state);
         $variableObject = IPS_GetObject($this->ReadPropertyInteger("VariableState{$count}"));
         //Geräte Variable setzen
-        IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+        if ($SwitchDummyOptional == true) {
+          SetValue(IPS_GetVariable($this->ReadPropertyInteger("VariableState{$count}"), $result)
+        } else {
+          IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+        }
       }
     }
   }
