@@ -80,7 +80,6 @@ class IPS_HomebridgeLightbulb extends IPSModule {
           $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
           $Data = json_encode($JSON);
           if ($this->HasActiveParent() == true) {
-            IPS_LogMessage("MessageSink2","drin");
             $this->SendDataToParent($Data);
           }
           else {

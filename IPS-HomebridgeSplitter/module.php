@@ -6,15 +6,12 @@ class IPS_HomebridgeSplitter extends IPSModule {
       $this->ConnectParent("{3AB77A94-3467-4E66-8A73-840B4AD89582}");
       //Verbinde mit WebSocket Splitter
   }
-
   public function ApplyChanges() {
       //Never delete this line!
       parent::ApplyChanges();
   }
-
   public function Destroy() {
   }
-
   public function ReceiveData($JSONString) {
     $this->SendDebug("JSON", $JSONString,0);
     $data = json_decode($JSONString);
@@ -43,7 +40,6 @@ class IPS_HomebridgeSplitter extends IPSModule {
       }
     }
   }
-
   public function ForwardData($JSONString) {
     $data = json_decode($JSONString);
     // Buffer decodieren und in eine Variable schreiben
@@ -77,7 +73,6 @@ class IPS_HomebridgeSplitter extends IPSModule {
       break;
     }
   }
-
   protected function getValue($service, $DeviceName, $Characteristic) {
     //Servcie -> um herauszufinden welche Instanz dafür zuständig ist
     //Device -> der Name des Devices
@@ -90,7 +85,6 @@ class IPS_HomebridgeSplitter extends IPSModule {
     $this->SendDataToChildren($Data);
     //$this->SendDataToChildren(json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Service"=> $service, "Device" => $DeviceName, "Action" => "get", "Characteristic" => $Characteristic)));
   }
-
   protected function setValue($service, $DeviceName, $Characteristic, $value) {
     //Servcie -> um herauszufinden welche Instanz dafür zuständig ist
     //Device -> der Name des Devices
