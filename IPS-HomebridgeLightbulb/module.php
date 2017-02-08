@@ -186,7 +186,7 @@ class IPS_HomebridgeLightbulb extends IPSModule {
       $VariableBrightnessCount = "VariableBrightness{$count}";
 
       //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
-      $name = $this->ReadPropertyString($DeviceNameCount)
+      $name = $this->ReadPropertyString($DeviceNameCount);
       if ($DeviceName == $name) {
         switch ($Characteristic) {
           case 'On':
