@@ -112,10 +112,12 @@ class IPS_HomebridgeHumidity extends IPSModule {
       //Hochzählen der Konfirgurationsform Variablen
       $DeviceNameCount = "DeviceName{$count}";
       $VariableHumidityCount = "VariableHumidity{$count}";
-      //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
-      if ($DeviceName == $this->ReadPropertyString($DeviceNameCount)) {
+      //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt wenn ja Wert an die Bridge senden
+      $name = $this->ReadPropertyString($DeviceNameCount);
+      if ($DeviceName == $name) {
         //IPS Variable abfragen und zur Bridge schicken
-        $result = GetValue($this->ReadPropertyInteger($VariableHumidityCount));
+        $VariableHumidityID = $this->ReadPropertyInteger($VariableHumidityCount);
+        $result = GetValue($VariableHumidityID);
         $result = number_format($result, 2, '.', '');
         $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
         $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');

@@ -4,8 +4,9 @@ class IPS_HomebridgeTemperatur extends IPSModule {
       //Never delete this line!
       parent::Create();
       $this->ConnectParent("{86C2DE8C-FB21-44B3-937A-9B09BB66FB76}");
-        $this->RegisterPropertyInteger("Anzahl",1);
-
+      //Anzahl die in der Konfirgurationsform angezeigt wird - Hier Standard auf 1
+      $this->RegisterPropertyInteger("Anzahl",1);
+      //99 Geräte können pro Konfirgurationsform angelegt werden
       for($count = 1; $count -1 < 99; $count++) {
         $DeviceName = "DeviceName{$count}";
         $TemperaturDeviceID = "TemperaturDeviceID{$count}";
@@ -20,16 +21,25 @@ class IPS_HomebridgeTemperatur extends IPSModule {
       //Never delete this line!
       parent::ApplyChanges();
       $anzahl = $this->ReadPropertyInteger("Anzahl");
+
       for($count = 1; $count-1 < $anzahl; $count++) {
-        $DeviceNameID = "DeviceName{$count}";
-        $VariableTemperatur = "VariableTemperatur{$count}";
-        if (is_int($this->GetBuffer($DeviceNameID." Temperatur ".$VariableTemperatur))) {
-        $this->UnregisterMessage(intval($this->GetBuffer($DeviceNameID." Temperatur ".$VariableTemperatur)), 10603);
+
+        $DeviceNameCount = "DeviceName{$count}";
+        $VariableTemperaturCount = "VariableTemperatur{$count}";
+        $BufferName = $DeviceNameCount." Temperatur ".$VariableTemperaturCount;
+        $VariableTemperaturBuffer = $this->GetBuffer($BufferName);
+        if (is_int($VariableTemperaturBuffer)) {
+        $this->UnregisterMessage(intval($VariableTemperaturBuffer), 10603);
         }
-        if ($this->ReadPropertyString($DeviceNameID) != "") {
-          $this->addAccessory($this->ReadPropertyString($DeviceNameID));
-          $this->RegisterMessage($this->ReadPropertyInteger($VariableTemperatur), 10603);
-          $this->SetBuffer($DeviceNameID." Temperatur ".$VariableTemperatur,$this->ReadPropertyInteger($VariableTemperatur));
+        $DeviceName = $this->ReadPropertyString($DeviceNameCount);
+        if ($DeviceName != "") {
+          //Accessory anlegen
+          $this->addAccessory($DeviceName);
+          $VariableTemperaturID = $this->ReadPropertyInteger($VariableTemperaturCount);
+          //Regestriere Temperatur Variable auf Veränderungen
+          $this->RegisterMessage($VariableTemperaturID, 10603);
+          //Buffer mit der aktuellen Variablen ID befüllen
+          $this->SetBuffer($BufferName,$VariableTemperaturID);
         }
         else {
           return;
@@ -41,10 +51,15 @@ class IPS_HomebridgeTemperatur extends IPSModule {
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
     $anzahl = $this->ReadPropertyInteger("Anzahl");
+
     for($count = 1; $count-1 < $anzahl; $count++) {
-      $VariableTemperatur = $this->ReadPropertyInteger("VariableTemperatur{$count}");
+      $DeviceNameCount = "DeviceName{$count}";
+      $VariableTemperaturCount = "VariableTemperatur{$count}";
+      $VariableTemperatur = $this->ReadPropertyInteger($VariableTemperaturCount);
+
+      //Prüfen ob die SenderID gleich der Temperatur Variable ist, dann den aktuellen Wert an die Bridge senden
       if ($VariableTemperatur == $SenderID) {
-        $DeviceName = $this->ReadPropertyString("DeviceName{$count}");
+        $DeviceName = $this->ReadPropertyString($DeviceNameCount);
         $Characteristic = "CurrentTemperature";
         $data = $Data[0];
         $result = number_format($data, 2, '.', '');
@@ -82,20 +97,26 @@ class IPS_HomebridgeTemperatur extends IPSModule {
     $Buffer = utf8_decode($data->Buffer);
     // Und Diese dann wieder dekodieren
     $HomebridgeData = json_decode($Buffer);
-      if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "TemperatureSensor") {
-        $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
-      }
+    //Prüfen ob die ankommenden Daten für den TemperatureSensor sind wenn ja, Status abfragen
+    if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "TemperatureSensor") {
+      $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
+    }
   }
 
   public function getVar($DeviceName, $Characteristic) {
-    for($count = 1; $count -1 < $this->ReadPropertyInteger("Anzahl"); $count++) {
+    $anzahl = $this->ReadPropertyInteger("Anzahl");
+
+    for($count = 1; $count -1 < $anzahl; $count++) {
+
       //Hochzählen der Konfirgurationsform Variablen
-      $TemperaturDeviceID = "TemperaturDeviceID{$count}";
-      $VariableTemperatur = "VariableTemperatur{$count}";
-      //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
-      if ($DeviceName == $this->ReadPropertyString("DeviceName{$count}")) {
+      $DeviceNameCount = "DeviceName{$count}";
+      $VariableTemperaturCount = "VariableTemperatur{$count}";
+      $name = $this->ReadPropertyString($DeviceNameCount);
+      //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt wenn ja Wert an die Bridge senden
+      if ($DeviceName == $name) {
         //IPS Variable abfragen
-        $result = GetValue($this->ReadPropertyInteger($VariableTemperatur));
+        $VariableTemperaturID = $this->ReadPropertyInteger($VariableTemperaturCount);
+        $result = GetValue($VariableTemperaturID);
         $result = number_format($result, 2, '.', '');
         $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
         $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
