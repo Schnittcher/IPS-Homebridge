@@ -143,7 +143,7 @@ class IPS_HomebridgeSwitch extends IPSModule {
       $VariableStateCount = "VariableState{$count}";
       $SwitchDummyOptional = "SwitchDummyOptional{$count}";
       //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
-      $name = $this->ReadPropertyString($DeviceNameCount)
+      $name = $this->ReadPropertyString($DeviceNameCount);
       if ($DeviceName == $name) {
         $VariableStateID = $this->ReadPropertyInteger($VariableStateCount);
         $variable = IPS_GetVariable($VariableStateID);
