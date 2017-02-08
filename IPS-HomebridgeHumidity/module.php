@@ -4,8 +4,9 @@ class IPS_HomebridgeHumidity extends IPSModule {
       //Never delete this line!
       parent::Create();
       $this->ConnectParent("{86C2DE8C-FB21-44B3-937A-9B09BB66FB76}");
-        $this->RegisterPropertyInteger("Anzahl",1);
-
+      //Anzahl die in der Konfirgurationsform angezeigt wird - Hier Standard auf 1
+      $this->RegisterPropertyInteger("Anzahl",1);
+      //99 Geräte können pro Konfirgurationsform angelegt werden
       for($count = 1; $count -1 < 99; $count++) {
         $DeviceName = "DeviceName{$count}";
         $HumidityDeviceID = "HumidityDeviceID{$count}";
@@ -21,16 +22,25 @@ class IPS_HomebridgeHumidity extends IPSModule {
       parent::ApplyChanges();
       $anzahl = $this->ReadPropertyInteger("Anzahl");
       for($count = 1; $count-1 < $anzahl; $count++) {
-        $DeviceName = "DeviceName{$count}";
-        $VariableHumidity = "VariableHumidity{$count}";
-        if (is_int($this->GetBuffer($DeviceName." Humidity ".$VariableHumidity))) {
-          IPS_LogMessage("integer",$this->GetBuffer($DeviceName." Humidity ".$VariableHumidity));
-          $this->UnregisterMessage(intval($this->GetBuffer($DeviceName." Humidity ".$VariableHumidity)), 10603);
+
+        $DeviceNameCount = "DeviceName{$count}";
+        $VariableHumidityCount = "VariableHumidity{$count}";
+        $BufferName = $DeviceNameCount." Humidity ".$VariableHumidityCount;
+        //Variablen ID für Humidity aus dem Buffer lesen
+        $VariableHumidity = $this->GetBuffer($DeviceNameCount." Humidity ".$VariableHumidityCount);
+
+        if (is_int($VariableHumidity)) {
+          //Alte Regestrierung auf Variablen Veränderung aufheben
+          $this->UnregisterMessage(intval($this->GetBuffer($BufferName)), 10603);
         }
-        if ($this->ReadPropertyString($DeviceName) != "") {
-          $this->addAccessory($this->ReadPropertyString($DeviceName));
-          $this->RegisterMessage($this->ReadPropertyInteger($VariableHumidity), 10603);
-          $this->SetBuffer($DeviceName." Humidity ".$VariableHumidity,$this->ReadPropertyInteger($VariableHumidity));
+
+        if ($this->ReadPropertyString($DeviceNameCount) != "") {
+          //Accessory anlegen
+          $this->addAccessory($this->ReadPropertyString($DeviceNameCount));
+          //Regestriere Humidity Variable auf Veränderungen
+          $this->RegisterMessage($this->ReadPropertyInteger($VariableHumidityCount), 10603);
+          //Buffer mit der aktuellen Variablen ID befüllen
+          $this->SetBuffer($BufferName,$this->ReadPropertyInteger($VariableHumidityCount));
         } else {
           return;
         }
@@ -40,12 +50,18 @@ class IPS_HomebridgeHumidity extends IPSModule {
   public function Destroy() {
 
   }
+
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
     $anzahl = $this->ReadPropertyInteger("Anzahl");
+
     for($count = 1; $count-1 < $anzahl; $count++) {
-      $VariableHumidity = $this->ReadPropertyInteger("VariableHumidity{$count}");
+
+      $DeviceNameCount = "DeviceName{$count}";
+      $VariableHumidityCount = "VariableHumidity{$count}";
+      $VariableHumidity = $this->ReadPropertyInteger($VariableHumidityCount);
+      //Prüfen ob die SenderID gleich der Humidity Variable ist, dann den aktuellen Wert an die Bridge senden
       if ($VariableHumidity == $SenderID) {
-        $DeviceName = $this->ReadPropertyString("DeviceName{$count}");
+        $DeviceName = $this->ReadPropertyString($DeviceNameCount);
         $Characteristic = "CurrentRelativeHumidity";
         $data = $Data[0];
         $result = number_format($data, 2, '.', '');
@@ -83,22 +99,23 @@ class IPS_HomebridgeHumidity extends IPSModule {
     $Buffer = utf8_decode($data->Buffer);
     // Und Diese dann wieder dekodieren
     $HomebridgeData = json_decode($Buffer);
-    IPS_LogMessage("Luftfeuchte ReceiveData", $JSONString);
-      if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "HumiditySensor") {
-        $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
-      }
+    //Prüfen ob die ankommenden Daten für den HumiditySensor sind wenn ja, Status abfragen
+    if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "HumiditySensor") {
+      $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
+    }
   }
 
   public function getVar($DeviceName, $Characteristic) {
-    for($count = 1; $count -1 < $this->ReadPropertyInteger("Anzahl"); $count++) {
+    $anzahl = $this->ReadPropertyInteger("Anzahl");
+
+    for($count = 1; $count -1 < $anzahl; $count++) {
       //Hochzählen der Konfirgurationsform Variablen
-      $HumidityDeviceID = "HumidityDeviceID{$count}";
-      $VariableHumidity = "VariableHumidity{$count}";
-          IPS_LogMessage("Luftfeuchte getVar", $DeviceName);
+      $DeviceNameCount = "DeviceName{$count}";
+      $VariableHumidityCount = "VariableHumidity{$count}";
       //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
-      if ($DeviceName == $this->ReadPropertyString("DeviceName{$count}")) {
-        //IPS Variable abfragen
-        $result = GetValue($this->ReadPropertyInteger($VariableHumidity));
+      if ($DeviceName == $this->ReadPropertyString($DeviceNameCount)) {
+        //IPS Variable abfragen und zur Bridge schicken
+        $result = GetValue($this->ReadPropertyInteger($VariableHumidityCount));
         $result = number_format($result, 2, '.', '');
         $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
         $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
