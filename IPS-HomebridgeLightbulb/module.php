@@ -40,10 +40,10 @@ class IPS_HomebridgeLightbulb extends IPSModule {
 
         //Alte Registrierung auf Variablen Veränderung aufheben
         if (is_int($VariableIDStateBuffer)) {
-          $this->UnregisterMessage(intval($VariableIDStateBuffer)), 10603);
+          $this->UnregisterMessage(intval($VariableIDStateBuffer), 10603);
         }
         if (is_int($VariableIDBrightnessBuffer)) {
-          $this->UnregisterMessage(intval($VariableIDBrightnessBuffer)), 10603);
+          $this->UnregisterMessage(intval($VariableIDBrightnessBuffer), 10603);
         }
 
         if ($this->ReadPropertyString($DeviceNameCount) != "") {
