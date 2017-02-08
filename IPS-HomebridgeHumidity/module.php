@@ -30,7 +30,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
         $VariableHumidityBuffer = $this->GetBuffer($BufferName);
 
         if (is_int($VariableHumidityBuffer)) {
-          //Alte Regestrierung auf Variablen Veränderung aufheben
+          //Alte Registrierung auf Variablen Veränderung aufheben
           $this->UnregisterMessage(intval($this->GetBuffer($BufferName)), 10603);
         }
 
