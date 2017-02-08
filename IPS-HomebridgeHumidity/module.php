@@ -27,9 +27,9 @@ class IPS_HomebridgeHumidity extends IPSModule {
         $VariableHumidityCount = "VariableHumidity{$count}";
         $BufferName = $DeviceNameCount." Humidity ".$VariableHumidityCount;
         //Variablen ID für Humidity aus dem Buffer lesen
-        $VariableHumidity = $this->GetBuffer($DeviceNameCount." Humidity ".$VariableHumidityCount);
+        $VariableHumidityBuffer = $this->GetBuffer($BufferName);
 
-        if (is_int($VariableHumidity)) {
+        if (is_int($VariableHumidityBuffer)) {
           //Alte Regestrierung auf Variablen Veränderung aufheben
           $this->UnregisterMessage(intval($this->GetBuffer($BufferName)), 10603);
         }
