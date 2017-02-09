@@ -134,8 +134,10 @@ class IPS_HomebridgeTemperatur extends IPSModule {
     $payload["CurrentTemperature"] = '{"minValue": -100, "maxValue": 100, "minStep": 0.1}';
     $array["topic"] ="add";
     $array["payload"] = $payload;
-    $Data = json_encode($array);
-    @$this->SendDataToParent($Data);
+    $data = json_encode($array);
+    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
+    @$this->SendDataToParent($SendData);
+
   }
 }
 ?>
