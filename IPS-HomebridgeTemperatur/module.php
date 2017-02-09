@@ -129,9 +129,15 @@ class IPS_HomebridgeTemperatur extends IPSModule {
   private function addAccessory($DeviceName) {
     //$array['topic'] = "add";
     //$array['Buffer'] = utf8_encode('"name": "'.$DeviceName.'", "service": "TemperatureSensor","CurrentTemperature": {"minValue": -100, "maxValue": 100, "minStep": 0.1}}');
+
+    $CurrentTemperature["minValue"] = "-100";
+    $CurrentTemperature["maxValue"] = "100";
+    $CurrentTemperature["minStep"] = "0.1";
+    //Payload bauen
     $payload["name"] = $DeviceName;
     $payload["service"] = "TemperatureSensor";
-    $payload["CurrentTemperature"] = '{"minValue": -100, "maxValue": 100, "minStep": 0.1}';
+    $payload["CurrentTemperature"] = $CurrentTemperature;
+
     $array["topic"] ="add";
     $array["payload"] = $payload;
     $data = json_encode($array);
