@@ -60,12 +60,8 @@ class IPS_HomebridgeSplitter extends IPSModule {
           $this->SendDataToParent(json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $data)));
       break;
       case 'add':
-          $array["topic"] ="add";
-          $array["payload"] = $HomebridgeData;
-          array(
-            "name" => utf8_encode($HomebridgeData->name),
-            "service" => utf8_encode($HomebridgeData->service)
-          );
+          $array["topic"] =$HomebridgeData->topic;
+          $array["payload"] = $HomebridgeData->payload;
           $data = (json_encode($array));
           $SendData = json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $data));
           $this->SendDebug('Add',$SendData,0);
