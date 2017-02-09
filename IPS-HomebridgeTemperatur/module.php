@@ -134,7 +134,7 @@ class IPS_HomebridgeTemperatur extends IPSModule {
     $CurrentTemperature["maxValue"] = "100";
     $CurrentTemperature["minStep"] = "0.1";
     //Payload bauen
-    $payload["name"] = $DeviceName;
+    $payload["name"] = utf8_encode($DeviceName);
     $payload["service"] = "TemperatureSensor";
     $payload["CurrentTemperature"] = $CurrentTemperature;
 
