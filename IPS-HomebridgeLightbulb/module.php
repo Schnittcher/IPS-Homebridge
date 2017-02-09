@@ -228,15 +228,19 @@ class IPS_HomebridgeLightbulb extends IPSModule {
   }
 
   private function addAccessory($DeviceName,$Brightness) {
-    $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
+    //Payload bauen
+    $payload["name"] = $DeviceName;
+    $payload["service"] = "Lightbulb";
+
     if ($Brightness == true) {
-      $JSON['Buffer'] = utf8_encode('{"topic": "add", "name": "'.$DeviceName.'", "service": "Lightbulb", "Brightness": "default"}');
+      $payload["Brightness"] = "default";
     }
-    else {
-      $JSON['Buffer'] = utf8_encode('{"topic": "add", "name": "'.$DeviceName.'", "service": "Lightbulb"}');
-    }
-    $Data = json_encode($JSON);
-    @$this->SendDataToParent($Data);
+
+    $array["topic"] ="add";
+    $array["payload"] = $payload;
+    $data = json_encode($array);
+    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
+    @$this->SendDataToParent($SendData);
   }
 
   public function ConvertVariable($variable, $value) {

@@ -163,10 +163,15 @@ class IPS_HomebridgeSwitch extends IPSModule {
   }
 
   private function addAccessory($DeviceName) {
-    $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-    $JSON['Buffer'] = utf8_encode('{"topic": "add", "name": "'.$DeviceName.'", "service": "Switch"}');
-    $Data = json_encode($JSON);
-    @$this->SendDataToParent($Data);
+    //Payload bauen
+    $payload["name"] = $DeviceName;
+    $payload["service"] = "Switch";
+
+    $array["topic"] ="add";
+    $array["payload"] = $payload;
+    $data = json_encode($array);
+    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
+    @$this->SendDataToParent($SendData);
   }
 
   public function ConvertVariable($variable, $state) {
