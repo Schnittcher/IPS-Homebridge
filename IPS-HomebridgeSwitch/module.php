@@ -97,6 +97,7 @@ class IPS_HomebridgeSwitch extends IPSModule {
   }
 
   public function ReceiveData($JSONString) {
+    $this->SendDebug('ReceiveData',$JSONString, 0);
     $data = json_decode($JSONString);
     // Buffer decodieren und in eine Variable schreiben
     $Buffer = utf8_decode($data->Buffer);

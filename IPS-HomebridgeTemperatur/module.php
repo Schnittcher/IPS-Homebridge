@@ -21,7 +21,7 @@ class IPS_HomebridgeTemperatur extends IPSModule {
       //Never delete this line!
       parent::ApplyChanges();
       //Setze Filter für ReceiveData
-      $this->SetReceiveDataFilter(".*TemperatureSensor.*");      
+      $this->SetReceiveDataFilter(".*TemperatureSensor.*");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
 
       for($count = 1; $count-1 < $anzahl; $count++) {
@@ -94,6 +94,7 @@ class IPS_HomebridgeTemperatur extends IPSModule {
   }
 
   public function ReceiveData($JSONString) {
+    $this->SendDebug('ReceiveData',$JSONString, 0);
     $data = json_decode($JSONString);
     // Buffer decodieren und in eine Variable schreiben
     $Buffer = utf8_decode($data->Buffer);
