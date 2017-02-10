@@ -24,6 +24,8 @@ class IPS_HomebridgeLightbulb extends IPSModule {
   public function ApplyChanges() {
       //Never delete this line!
       parent::ApplyChanges();
+      //Setze Filter für ReceiveData
+      $this->SetReceiveDataFilter(".*Lightbulb.*");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
       for($count = 1; $count-1 < $anzahl; $count++) {
 

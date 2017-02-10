@@ -23,6 +23,8 @@ class IPS_HomebridgeSwitch extends IPSModule {
       //Never delete this line!
       parent::ApplyChanges();
       $this->ConnectParent("{86C2DE8C-FB21-44B3-937A-9B09BB66FB76}");
+      //Setze Filter für ReceiveData
+      $this->SetReceiveDataFilter(".*Switch.*");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
 
       for($count = 1; $count-1 < $anzahl; $count++) {

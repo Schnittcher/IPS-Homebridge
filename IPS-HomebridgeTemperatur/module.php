@@ -20,6 +20,8 @@ class IPS_HomebridgeTemperatur extends IPSModule {
   public function ApplyChanges() {
       //Never delete this line!
       parent::ApplyChanges();
+      //Setze Filter für ReceiveData
+      $this->SetReceiveDataFilter(".*TemperatureSensor.*");      
       $anzahl = $this->ReadPropertyInteger("Anzahl");
 
       for($count = 1; $count-1 < $anzahl; $count++) {
