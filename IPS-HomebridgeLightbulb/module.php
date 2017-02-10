@@ -75,33 +75,35 @@ class IPS_HomebridgeLightbulb extends IPSModule {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
-    $anzahl = $this->ReadPropertyInteger("Anzahl");
+    if ($Data[1] == true) {
+      $anzahl = $this->ReadPropertyInteger("Anzahl");
 
-    for($count = 1; $count-1 < $anzahl; $count++) {
+      for($count = 1; $count-1 < $anzahl; $count++) {
 
-      $VariableStateCount = $this->ReadPropertyInteger("VariableState{$count}");
-      $VariableBrightnessCount = $this->ReadPropertyInteger("VariableBrightness{$count}");
-      $DeviceName = $this->ReadPropertyString("DeviceName{$count}");
+        $VariableStateCount = $this->ReadPropertyInteger("VariableState{$count}");
+        $VariableBrightnessCount = $this->ReadPropertyInteger("VariableBrightness{$count}");
+        $DeviceName = $this->ReadPropertyString("DeviceName{$count}");
 
-      //Prüfen ob die SenderID gleich der State oder Brightness Variable ist, dann den aktuellen Wert an die Bridge senden
-      switch ($SenderID) {
-        case $VariableStateCount:
-          $Characteristic = "On";
-          $data = $Data[0];
-          $result = ($data) ? 'true' : 'false';
-          $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-          $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-          $Data = json_encode($JSON);
-          $this->SendDataToParent($Data);
-          break;
-        case $VariableBrightnessCount:
-          $Characteristic = "Brightness";
-          $result = $Data[0];
-          $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-          $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-          $Data = json_encode($JSON);
-          $this->SendDataToParent($Data);
-          break;
+        //Prüfen ob die SenderID gleich der State oder Brightness Variable ist, dann den aktuellen Wert an die Bridge senden
+        switch ($SenderID) {
+          case $VariableStateCount:
+            $Characteristic = "On";
+            $data = $Data[0];
+            $result = ($data) ? 'true' : 'false';
+            $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
+            $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
+            $Data = json_encode($JSON);
+            $this->SendDataToParent($Data);
+            break;
+          case $VariableBrightnessCount:
+            $Characteristic = "Brightness";
+            $result = $Data[0];
+            $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
+            $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
+            $Data = json_encode($JSON);
+            $this->SendDataToParent($Data);
+            break;
+          }
         }
       }
     }

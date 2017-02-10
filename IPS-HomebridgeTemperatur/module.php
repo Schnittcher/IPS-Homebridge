@@ -52,26 +52,28 @@ class IPS_HomebridgeTemperatur extends IPSModule {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
-    $anzahl = $this->ReadPropertyInteger("Anzahl");
+    if ($Data[1] == true) {
+      $anzahl = $this->ReadPropertyInteger("Anzahl");
 
-    for($count = 1; $count-1 < $anzahl; $count++) {
-      $DeviceNameCount = "DeviceName{$count}";
-      $VariableTemperaturCount = "VariableTemperatur{$count}";
-      $VariableTemperatur = $this->ReadPropertyInteger($VariableTemperaturCount);
+      for($count = 1; $count-1 < $anzahl; $count++) {
+        $DeviceNameCount = "DeviceName{$count}";
+        $VariableTemperaturCount = "VariableTemperatur{$count}";
+        $VariableTemperatur = $this->ReadPropertyInteger($VariableTemperaturCount);
 
-      //Prüfen ob die SenderID gleich der Temperatur Variable ist, dann den aktuellen Wert an die Bridge senden
-      if ($VariableTemperatur == $SenderID) {
-        $DeviceName = $this->ReadPropertyString($DeviceNameCount);
-        $Characteristic = "CurrentTemperature";
-        $data = $Data[0];
-        $result = number_format($data, 2, '.', '');
-        $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-        $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-        $Data = json_encode($JSON);
-        $this->SendDataToParent($Data);
+        //Prüfen ob die SenderID gleich der Temperatur Variable ist, dann den aktuellen Wert an die Bridge senden
+        if ($VariableTemperatur == $SenderID) {
+          $DeviceName = $this->ReadPropertyString($DeviceNameCount);
+          $Characteristic = "CurrentTemperature";
+          $data = $Data[0];
+          $result = number_format($data, 2, '.', '');
+          $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
+          $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
+          $Data = json_encode($JSON);
+          $this->SendDataToParent($Data);
+        }
       }
     }
-}
+  }
 
   public function GetConfigurationForm() {
     $anzahl = $this->ReadPropertyInteger("Anzahl");

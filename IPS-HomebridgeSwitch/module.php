@@ -54,25 +54,27 @@ class IPS_HomebridgeSwitch extends IPSModule {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
-    $anzahl = $this->ReadPropertyInteger("Anzahl");
+    if ($Data[1] == true) {
+      $anzahl = $this->ReadPropertyInteger("Anzahl");
 
-    for($count = 1; $count-1 < $anzahl; $count++) {
-      $DeviceNameCount = "DeviceName{$count}";
-      $VariableStateCount = "VariableState{$count}";
-      $VariableState = $this->ReadPropertyInteger($VariableStateCount);
-      //Prüfen ob die SenderID gleich der State Variable ist, dann den aktuellen Wert an die Bridge senden
-      if ($VariableState == $SenderID) {
-        $DeviceName = $this->ReadPropertyString($DeviceNameCount);
-        $Characteristic = "On";
-        $data = $Data[0];
-        $result = ($data) ? 'true' : 'false';
-        $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-        $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-        $Data = json_encode($JSON);
-        $this->SendDataToParent($Data);
+      for($count = 1; $count-1 < $anzahl; $count++) {
+        $DeviceNameCount = "DeviceName{$count}";
+        $VariableStateCount = "VariableState{$count}";
+        $VariableState = $this->ReadPropertyInteger($VariableStateCount);
+        //Prüfen ob die SenderID gleich der State Variable ist, dann den aktuellen Wert an die Bridge senden
+        if ($VariableState == $SenderID) {
+          $DeviceName = $this->ReadPropertyString($DeviceNameCount);
+          $Characteristic = "On";
+          $data = $Data[0];
+          $result = ($data) ? 'true' : 'false';
+          $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
+          $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
+          $Data = json_encode($JSON);
+          $this->SendDataToParent($Data);
+        }
       }
     }
-}
+  }
 
   public function GetConfigurationForm() {
     $anzahl = $this->ReadPropertyInteger("Anzahl");
