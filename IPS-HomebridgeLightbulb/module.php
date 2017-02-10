@@ -164,7 +164,7 @@ class IPS_HomebridgeLightbulb extends IPSModule {
             //Lightbulb State abfragen
             $VariableStateID = $this->ReadPropertyInteger($VariableStateCount);
             $result = intval(GetValue($VariableStateID));
-            $result = ($result) ? 'true' : 'false';
+            // $result = ($result) ? 'true' : 'false';
             break;
           case 'Brightness':
             //Lightbulb Brightness abfragen
