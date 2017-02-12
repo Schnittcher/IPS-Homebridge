@@ -78,6 +78,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
   }
 
   public function GetConfigurationForm() {
+    $ID =  $this->InstanceID;
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     $form = '{"elements":
               [
@@ -87,7 +88,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "HumidityDeviceID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableHumidity'.$count.'", "caption": "Luftfeuchtigkeit" },';
-      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "HBHumidity_removeAccessory('.$count.');" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "HBHumidity_removeAccessory('.$ID.''.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
