@@ -87,7 +87,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "HumidityDeviceID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableHumidity'.$count.'", "caption": "Luftfeuchtigkeit" },';
-      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "HBHumidity_removeAccessory($count,$id);" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "HBHumidity_removeAccessory('.$count.',.'$id.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
