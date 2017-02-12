@@ -95,7 +95,11 @@ class IPS_HomebridgeHumidity extends IPSModule {
         $form .= '{ "type": "Label", "label": "------------------" },';
       }
     }
-    $form .= ']}';
+    $form .= '],';
+    $form .= ' "status":
+    [
+        { "code": 201, "icon": "active", "caption": "Accessory gelöscht" }
+    ]}'
     return $form;
   }
 
@@ -145,6 +149,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
+    $this->SetStatus(201);
   }
 
   public function removeAccessory($DeviceCount) {
@@ -157,7 +162,6 @@ class IPS_HomebridgeHumidity extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
-    return "Entfernt!";
   }
 }
 ?>
