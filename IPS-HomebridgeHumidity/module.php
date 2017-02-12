@@ -146,7 +146,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
     @$this->SendDataToParent($SendData);
   }
 
-  private function removeAccessory($DeviceCount) {
+  public function removeAccessory($DeviceCount) {
     //Payload bauen
     $DeviceName = $this->ReadPropertyString("DeviceName{$count}");
     $payload["name"] = $DeviceName;
