@@ -88,18 +88,14 @@ class IPS_HomebridgeHumidity extends IPSModule {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "HumidityDeviceID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableHumidity'.$count.'", "caption": "Luftfeuchtigkeit" },';
-      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "HBHumidity_removeAccessory('.$ID.','.$count.');" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBHumidity_removeAccessory('.$ID.','.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
         $form .= '{ "type": "Label", "label": "------------------" },';
       }
     }
-    $form .= '],';
-    $form .= ' "status":
-    [
-        { "code": 105, "icon": "active", "caption": "Accessory gelöscht" }
-    ]}';
+    $form .= ']}';
     return $form;
   }
 
@@ -161,7 +157,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
-    $this->SetStatus(105);
+    return "Gelöscht!";
   }
 }
 ?>
