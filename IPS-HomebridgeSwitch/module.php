@@ -88,7 +88,7 @@ class IPS_HomebridgeSwitch extends IPSModule {
       $form .= '{ "type": "SelectVariable", "name": "VariableState'.$count.'", "caption": "Status (Characteristic .On)" },';
       $form .= '{ "type": "Label", "label": "Soll eine eigene Variable geschaltet werden?" },';
       $form .= '{ "type": "CheckBox", "name": "SwitchDummyOptional'.$count.'", "caption": "Ja" },';
-      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBSplitter_removeAccessory('.$this->InstanceID.','.$count.');" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBSwitch_removeAccessory('.$this->InstanceID.','.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
@@ -178,6 +178,20 @@ class IPS_HomebridgeSwitch extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
+  }
+
+  public function removeAccessory($DeviceCount) {
+    //Payload bauen
+    $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
+    $payload["name"] = $DeviceName;
+
+    $array["topic"] ="remove";
+    $array["payload"] = $payload;
+    $data = json_encode($array);
+    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
+    $this->SendDebug('Remove',$SendData,0);
+    $this->SendDataToParent($SendData);
+    return "Gelöscht!";
   }
 
   public function ConvertVariable($variable, $state) {

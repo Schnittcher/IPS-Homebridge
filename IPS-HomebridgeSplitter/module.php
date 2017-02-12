@@ -101,19 +101,5 @@ class IPS_HomebridgeSplitter extends IPSModule {
     $this->SendDebug('setValue SendDataToChildren',$Data,0);
     $this->SendDataToChildren($Data);
     }
-
-    public function removeAccessory($DeviceCount) {
-      //Payload bauen
-      $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
-      $payload["name"] = $DeviceName;
-
-      $array["topic"] ="remove";
-      $array["payload"] = $payload;
-      $data = json_encode($array);
-      $SendData = json_encode(Array("DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}", "Buffer" => $data));
-      $this->SendDebug('Remove',$SendData,0);
-      $this->SendDataToParent($SendData);
-return "Gelöscht!";
-    }
 }
 ?>

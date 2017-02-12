@@ -78,7 +78,6 @@ class IPS_HomebridgeHumidity extends IPSModule {
   }
 
   public function GetConfigurationForm() {
-    $ID =  $this->InstanceID;
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     $form = '{"elements":
               [
@@ -88,7 +87,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "HumidityDeviceID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableHumidity'.$count.'", "caption": "Luftfeuchtigkeit" },';
-      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBSplitter_removeAccessory('.$ID.','.$count.');" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBHumidity_removeAccessory('.$this->InstanceID.','.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
@@ -145,6 +144,20 @@ class IPS_HomebridgeHumidity extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
+  }
+
+  public function removeAccessory($DeviceCount) {
+    //Payload bauen
+    $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
+    $payload["name"] = $DeviceName;
+
+    $array["topic"] ="remove";
+    $array["payload"] = $payload;
+    $data = json_encode($array);
+    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
+    $this->SendDebug('Remove',$SendData,0);
+    $this->SendDataToParent($SendData);
+    return "Gelöscht!";
   }
 }
 ?>

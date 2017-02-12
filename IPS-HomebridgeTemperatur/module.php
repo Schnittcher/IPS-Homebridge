@@ -85,7 +85,7 @@ class IPS_HomebridgeTemperatur extends IPSModule {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "TemperaturDeviceID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableTemperatur'.$count.'", "caption": "Temperatur" },';
-      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBSplitter_removeAccessory('.$this->InstanceID.','.$count.');" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBTemperatur_removeAccessory('.$this->InstanceID.','.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
@@ -149,7 +149,20 @@ class IPS_HomebridgeTemperatur extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
+  }
 
+  public function removeAccessory($DeviceCount) {
+    //Payload bauen
+    $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
+    $payload["name"] = $DeviceName;
+
+    $array["topic"] ="remove";
+    $array["payload"] = $payload;
+    $data = json_encode($array);
+    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
+    $this->SendDebug('Remove',$SendData,0);
+    $this->SendDataToParent($SendData);
+    return "Gelöscht!";
   }
 }
 ?>
