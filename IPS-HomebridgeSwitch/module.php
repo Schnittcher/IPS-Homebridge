@@ -88,7 +88,7 @@ class IPS_HomebridgeSwitch extends IPSModule {
       $form .= '{ "type": "SelectVariable", "name": "VariableState'.$count.'", "caption": "Status (Characteristic .On)" },';
       $form .= '{ "type": "Label", "label": "Soll eine eigene Variable geschaltet werden?" },';
       $form .= '{ "type": "CheckBox", "name": "SwitchDummyOptional'.$count.'", "caption": "Ja" },';
-      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBSplitter_removeAccessory('.$ID.','.$count.');" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBSplitter_removeAccessory('.$this->InstanceID.','.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
