@@ -85,6 +85,7 @@ class IPS_HomebridgeTemperatur extends IPSModule {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "TemperaturDeviceID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableTemperatur'.$count.'", "caption": "Temperatur" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBSplitter_removeAccessory('.$ID.','.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
