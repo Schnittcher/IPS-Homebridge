@@ -98,7 +98,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
     $form .= '],';
     $form .= ' "status":
     [
-        { "code": 201, "icon": "active", "caption": "Accessory gelöscht" }
+        { "code": 105, "icon": "active", "caption": "Accessory gelöscht" }
     ]}';
     return $form;
   }
@@ -161,7 +161,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
-    $this->SetStatus(201);
+    $this->SetStatus(105);
   }
 }
 ?>
