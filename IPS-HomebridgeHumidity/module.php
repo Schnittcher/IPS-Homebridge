@@ -99,7 +99,7 @@ class IPS_HomebridgeHumidity extends IPSModule {
     $form .= ' "status":
     [
         { "code": 201, "icon": "active", "caption": "Accessory gelöscht" }
-    ]}'
+    ]}';
     return $form;
   }
 
