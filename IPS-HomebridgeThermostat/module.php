@@ -392,7 +392,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
                 break;
             }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
-            $result = $this->ConvertVariable($variable, $value);
+            $result = $this->ConvertVariable($variable, $result);
             //Geräte Variable setzen
             IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
             break;
@@ -422,7 +422,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
                 break;
             }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
-            $result = $this->ConvertVariable($variable, $value);
+            $result = $this->ConvertVariable($variable, $result);
             IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
             break;
           case 'CurrentTemperature':
