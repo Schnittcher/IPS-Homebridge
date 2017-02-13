@@ -184,7 +184,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
               case $TargetHeatingCoolingAuto:
                 $result = 3;
                 break;
-            }        
+            }
             break;
           case $VariableCurrentTemperatureID:
             $Characteristic = "CurrentTemperature";
@@ -382,13 +382,13 @@ class IPS_HomebridgeThermostat extends IPSModule {
     //$array['topic'] = "add";
     //$array['Buffer'] = utf8_encode('"name": "'.$DeviceName.'", "service": "TemperatureSensor","CurrentTemperature": {"minValue": -100, "maxValue": 100, "minStep": 0.1}}');
 
-    $CurrentTemperature["minValue"] = -100;
-    $CurrentTemperature["maxValue"] = 100;
-    $CurrentTemperature["minStep"] = 0.1;
+//    $CurrentTemperature["minValue"] = -100;
+//    $CurrentTemperature["maxValue"] = 100;
+//    $CurrentTemperature["minStep"] = 0.1;
     //Payload bauen
     $payload["name"] = $DeviceName;
     $payload["service"] = "Thermostat";
-    $payload["CurrentTemperature"] = $CurrentTemperature;
+    //$payload["CurrentTemperature"] = $CurrentTemperature;
 
     $array["topic"] ="add";
     $array["payload"] = $payload;
