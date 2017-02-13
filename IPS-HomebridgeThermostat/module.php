@@ -406,7 +406,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
             $variable = IPS_GetVariable($VariableTargetHeatingCoolingStateID);
             $variableObject = IPS_GetObject($VariableTargetHeatingCoolingStateID);
 
-            switch ($value) {
+            switch (intval($value)) {
               case 0:
                 $result = $TargetHeatingCoolingOff;
                 break;
