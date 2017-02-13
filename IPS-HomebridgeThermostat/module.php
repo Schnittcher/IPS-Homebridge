@@ -145,7 +145,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
             $Characteristic = "CurrentTemperature";
             $result = number_format($data, 2, '.', '');
             break;
-          case: $VariableTargetTemperatureID:
+          case $VariableTargetTemperatureID:
             $Characteristic = "TargetTemperature";
             $result = number_format($data, 2, '.', '');
             break;
