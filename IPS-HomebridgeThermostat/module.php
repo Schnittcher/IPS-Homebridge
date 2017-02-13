@@ -24,6 +24,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
         $TargetHeatingCoolingCooling = "TargetHeatingCoolingCooling{$count}";
         $TargetHeatingCoolingAuto = "TargetHeatingCoolingAuto{$count}";
 
+        $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($ThermostatID, 0);
         //CurrentHeatingCoolingState
         $this->RegisterPropertyInteger($CurrentHeatingCoolingState, 0);
