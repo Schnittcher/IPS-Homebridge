@@ -62,10 +62,10 @@ class IPS_HomebridgeThermostat extends IPSModule {
         $CurrentTemperatureCount = "CurrentTemperature{$count}";
         $TargetTemperatureCount = "TargetTemperature{$count}";
         //Buffernamen
-        $BufferNameCurrentHeatingCoolingState = $DeviceNameCount." ".$VariableStateCount;
-        $BufferNameTargetHeatingCoolingState = $DeviceNameCount." ".$VariableBrightnessCount;
-        $BufferNameCurrentTemperature = $DeviceNameCount." ".$VariableBrightnessCount;
-        $BufferNameTargetTemperature = $DeviceNameCount." ".$VariableBrightnessCount;
+        $BufferNameCurrentHeatingCoolingState = $DeviceNameCount." ".$CurrentHeatingCoolingStateCount;
+        $BufferNameTargetHeatingCoolingState = $DeviceNameCount." ".$TargetHeatingCoolingStateCount;
+        $BufferNameCurrentTemperature = $DeviceNameCount." ".$CurrentTemperatureCount;
+        $BufferNameTargetTemperature = $DeviceNameCount." ".$TargetTemperatureCount;
         //Buffer auslesen
         $VariableCurrentHeatingCoolingStateBuffer = $this->GetBuffer($BufferNameCurrentHeatingCoolingState);
         $VariableTargetHeatingCoolingStateBuffer = $this->GetBuffer($BufferNameTargetHeatingCoolingState);
