@@ -340,8 +340,6 @@ class IPS_HomebridgeThermostat extends IPSModule {
             $result = 0;
             break;
           }
-
-        }
         $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
         $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
         $Data = json_encode($JSON);
