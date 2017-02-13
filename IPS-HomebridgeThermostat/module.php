@@ -266,7 +266,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
             $TargetHeatingCoolingCooling = $this->ReadPropertyInteger($TargetHeatingCoolingCoolingCount);
             $TargetHeatingCoolingAuto = $this->ReadPropertyInteger($TargetHeatingCoolingAutoCount);
 
-            $result = intval(GetValue($VariableCurrentHeatingCoolingStateID));
+            $result = intval(GetValue($VariableTargetHeatingCoolingStateID));
             switch ($result) {
               case $TargetHeatingCoolingOff:
                 $result = 0;
