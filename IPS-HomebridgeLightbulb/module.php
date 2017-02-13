@@ -130,7 +130,7 @@ class IPS_HomebridgeLightbulb extends IPSModule {
 
       $form .= '{ "type": "CheckBox", "name": "VariableBrightnessOptional'.$count.'", "caption": "Dimmbar?" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableBrightness'.$count.'", "caption": "Brightness" },';
-      $form := '{ "type": "NumberSpinner", "name": "VariableBrightnessMax'.$count.'", "caption": "Max. Value", "digits": 2},';
+      $form .= '{ "type": "NumberSpinner", "name": "VariableBrightnessMax'.$count.'", "caption": "Max. Value", "digits": 2},';
       $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBLightbulb_removeAccessory('.$this->InstanceID.','.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
