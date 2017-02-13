@@ -415,6 +415,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
                 break;
               case 2:
                 $result = $TargetHeatingCoolingCooling;
+                IPS_LogMessage("cooling", $result);
                 break;
               case 3:
                 $result = $TargetHeatingCoolingAuto;
