@@ -166,6 +166,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
                 { "type": "NumberSpinner", "name": "Anzahl", "caption": "Anzahl" },';
     // Zählen wieviele Felder in der Form angelegt werden müssen
     for($count = 1; $count-1 < $anzahl; $count++) {
+      $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "ThermostatID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "CurrentHeatingCoolingState'.$count.'", "caption": "CurrentHeatingCoolingState" },';
 
