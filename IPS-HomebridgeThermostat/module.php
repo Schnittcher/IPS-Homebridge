@@ -204,10 +204,10 @@ class IPS_HomebridgeThermostat extends IPSModule {
     $HomebridgeData = json_decode($Buffer);
     //Prüfen ob die ankommenden Daten für den Switch sind wenn ja, Status abfragen oder setzen
     if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "Thermostat") {
-      $this->getState($HomebridgeData->Device, $HomebridgeData->Characteristic);
+      $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
     }
     if ($HomebridgeData->Action == "set" && $HomebridgeData->Service == "Thermostat") {
-      $this->setState($HomebridgeData->Device, $HomebridgeData->Value, $HomebridgeData->Characteristic);
+      $this->setVar($HomebridgeData->Device, $HomebridgeData->Value, $HomebridgeData->Characteristic);
     }
   }
 
