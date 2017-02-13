@@ -373,11 +373,6 @@ class IPS_HomebridgeThermostat extends IPSModule {
 
   }
 
-
-
-
-
-
   private function addAccessory($DeviceName) {
     //$array['topic'] = "add";
     //$array['Buffer'] = utf8_encode('"name": "'.$DeviceName.'", "service": "TemperatureSensor","CurrentTemperature": {"minValue": -100, "maxValue": 100, "minStep": 0.1}}');
@@ -388,7 +383,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
     //Payload bauen
     $payload["name"] = $DeviceName;
     $payload["service"] = "Thermostat";
-    //$payload["CurrentTemperature"] = $CurrentTemperature;
+    $payload["CurrentTemperature"] = "deafult";
 
     $array["topic"] ="add";
     $array["payload"] = $payload;
