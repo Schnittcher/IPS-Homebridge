@@ -370,7 +370,76 @@ class IPS_HomebridgeThermostat extends IPSModule {
 
       //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt
       $name = $this->ReadPropertyString($DeviceNameCount);
+      if ($DeviceName == $name) {
+        switch ($Characteristic) {
+          case 'CurrentHeatingCoolingState':
+            $VariableCurrentHeatingCoolingStateID = $this->ReadPropertyInteger($CurrentHeatingCoolingStateCount);
+            $CurrentHeatingCoolingOff = $this->ReadPropertyInteger($CurrentHeatingCoolingOffCount);
+            $CurrentHeatingCoolingHeating = $this->ReadPropertyInteger($CurrentHeatingCoolingHeatingCount);
+            $CurrentHeatingCoolingCooling = $this->ReadPropertyInteger($CurrentHeatingCoolingCoolingCount);
 
+            $variable = IPS_GetVariable($VariableCurrentHeatingCoolingStateID);
+            $variableObject = IPS_GetObject($VariableCurrentHeatingCoolingStateID);
+            switch ($value) {
+              case 0:
+                $result = $CurrentHeatingCoolingOff;
+                break;
+              case 1:
+                $result = $CurrentHeatingCoolingHeating;
+                break;
+              case 2:
+                $result = $CurrentHeatingCoolingCooling;
+                break;
+            }
+            //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
+            $result = $this->ConvertVariable($variable, $value);
+            //Geräte Variable setzen
+            IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+            break;
+          case 'TargetHeatingCoolingState':
+            $VariableTargetHeatingCoolingStateID = $this->ReadPropertyInteger($TargetHeatingCoolingStateCount);
+            $TargetHeatingCoolingOff = $this->ReadPropertyInteger($TargetHeatingCoolingOffCount);
+            $TargetHeatingCoolingHeating = $this->ReadPropertyInteger($TargetHeatingCoolingHeatingCount);
+            $TargetHeatingCoolingCooling = $this->ReadPropertyInteger($TargetHeatingCoolingCoolingCount);
+            $TargetHeatingCoolingAuto = $this->ReadPropertyInteger($TargetHeatingCoolingAutoCount);
+
+            $variable = IPS_GetVariable($VariableTargetHeatingCoolingStateID);
+            $variableObject = IPS_GetObject($VariableTargetHeatingCoolingStateID);
+
+            switch ($value) {
+              case 0:
+                $result = $TargetHeatingCoolingOff;
+                break;
+              case 1:
+                $result = $TargetHeatingCoolingHeating;
+                break;
+              case 2:
+                $result = $TargetHeatingCoolingCooling;
+                break;
+              case 3:
+                $result = $TargetHeatingCoolingAuto;
+                break;
+            }
+            //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
+            $result = $this->ConvertVariable($variable, $value);
+            IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+            break;
+          case 'CurrentTemperature':
+            $VariableCurrentTemperatureID = $this->ReadPropertyInteger($CurrentTemperatureCount);
+            $variable = IPS_GetVariable($VariableCurrentTemperatureID);
+            $variableObject = IPS_GetObject($VariableCurrentTemperatureID);
+            $result = $this->ConvertVariable($variable, $value);
+            IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+            break;
+          case 'TargetTemperature':
+            $VariableTargetTemperatureID = $this->ReadPropertyInteger($TargetTemperatureCount);
+            $variable = IPS_GetVariable($VariableCurrentTemperatureID);
+            $variableObject = IPS_GetObject($VariableCurrentTemperatureID);
+            $result = $this->ConvertVariable($variable, $value);
+            IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+            break;
+        }
+      }
 
     }
 
