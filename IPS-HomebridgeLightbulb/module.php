@@ -15,12 +15,14 @@ class IPS_HomebridgeLightbulb extends IPSModule {
         $VariableStateFalse = "VariableStateFalse{$count}";
         $VariableBrightness = "VariableBrightness{$count}";
         $VariableBrightnessOptional = "VariableBrightnessOptional{$count}";
+        $VariableBrightnessMax = "VariableBrightnessMax{$count}";
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($LightbulbID, 0);
         $this->RegisterPropertyInteger($VariableStateTrue, 1);
         $this->RegisterPropertyInteger($VariableStateFalse, 0);
         $this->RegisterPropertyInteger($VariableState, 0);
         $this->RegisterPropertyBoolean($VariableBrightnessOptional, false);
+        $this->RegisterPropertyInteger($VariableBrightnessMax, 100);
         $this->RegisterPropertyInteger($VariableBrightness, 0);
       }
   }
@@ -167,6 +169,8 @@ class IPS_HomebridgeLightbulb extends IPSModule {
       $VariableStateTrueCount = "VariableStateTrue{$count}";
       $VariableStateFalseCount = "VariableStateFalse{$count}";
 
+      $VariableBrightnessMaxCount = "VariableBrightnessMax{$count}";
+
       //Prüfen ob der übergebene Name aus dem Socket zu einem Namen aus der Konfirgurationsform passt
       $name = $this->ReadPropertyString("DeviceName{$count}");
       if ($DeviceName == $name) {
@@ -191,7 +195,9 @@ class IPS_HomebridgeLightbulb extends IPSModule {
           case 'Brightness':
             //Lightbulb Brightness abfragen
             $VariableBrightnessID = $this->ReadPropertyInteger($VariableBrightnessCount);
+            $VariableBrightnessMax = $this->ReadPropertyInteger($VariableBrightnessMaxCount);
             $result = GetValue($VariableBrightnessID);
+            $result = ($result / $VariableBrightnessMax) * 100;
             break;
         }
         //Status an die Bridge senden
@@ -214,6 +220,8 @@ class IPS_HomebridgeLightbulb extends IPSModule {
 
       $VariableStateTrueCount = "VariableStateTrue{$count}";
       $VariableStateFalseCount = "VariableStateFalse{$count}";
+
+      $VariableBrightnessMaxCount = "VariableBrightnessMax{$count}";
 
       //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
       $name = $this->ReadPropertyString($DeviceNameCount);
@@ -267,6 +275,10 @@ class IPS_HomebridgeLightbulb extends IPSModule {
             break;
           case 'Brightness':
             //Lightbulb Brightness abfragen
+            $VariableBrightnessMax = $this->ReadPropertyInteger($VariableBrightnessMaxCount);
+            //Umrechnung
+            $value = ($value / 100) * $VariableBrightnessMax;
+
             $VariableBrightnessID = $this->ReadPropertyInteger($VariableBrightnessCount);
             $variable = IPS_GetVariable($VariableBrightnessID);
             $variableObject = IPS_GetObject($VariableBrightnessID);
