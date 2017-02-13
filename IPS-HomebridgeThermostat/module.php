@@ -383,7 +383,6 @@ class IPS_HomebridgeThermostat extends IPSModule {
     //Payload bauen
     $payload["name"] = $DeviceName;
     $payload["service"] = "Thermostat";
-    $payload["CurrentTemperature"] = "default";
 
     $array["topic"] ="add";
     $array["payload"] = $payload;
