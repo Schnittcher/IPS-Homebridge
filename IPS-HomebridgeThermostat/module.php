@@ -130,17 +130,61 @@ class IPS_HomebridgeThermostat extends IPSModule {
         $VariableCurrentTemperatureID = $this->ReadPropertyInteger($CurrentTemperatureCount);
         $VariableTargetTemperatureID = $this->ReadPropertyInteger($TargetTemperatureCount);
 
+
+        $CurrentHeatingCoolingOffCount = "CurrentHeatingCoolingOff{$count}";
+        $CurrentHeatingCoolingHeatingCount ="CurrentHeatingCoolingHeating{$count}";
+        $CurrentHeatingCoolingCoolingCount ="CurrentHeatingCoolingCooling{$count}";
+
+        $TargetHeatingCoolingOffCount = "TargetHeatingCoolingOff{$count}";
+        $TargetHeatingCoolingHeatingCount = "TargetHeatingCoolingHeating{$count}";
+        $TargetHeatingCoolingCoolingCount = "TargetHeatingCoolingCooling{$count}";
+        $TargetHeatingCoolingAutoCount = "TargetHeatingCoolingAuto{$count}";
+
         $DeviceName = $this->ReadPropertyString($DeviceNameCount);
         $data = $Data[0];
         //Prüfen ob die SenderID gleich der Temperatur Variable ist, dann den aktuellen Wert an die Bridge senden
         switch ($SenderID) {
           case $VariableCurrentHeatingCoolingStateID:
+            $CurrentHeatingCoolingOff = $this->ReadPropertyInteger($CurrentHeatingCoolingOffCount);
+            $CurrentHeatingCoolingHeating = $this->ReadPropertyInteger($CurrentHeatingCoolingHeatingCount);
+            $CurrentHeatingCoolingCooling = $this->ReadPropertyInteger($CurrentHeatingCoolingCoolingCount);
             $Characteristic = "CurrentHeatingCoolingState";
             $result = $data;
+            switch ($result) {
+              case $CurrentHeatingCoolingOff:
+                $result = 0;
+                break;
+              case $CurrentHeatingCoolingHeating:
+                $result = 1;
+                break;
+              case $CurrentHeatingCoolingCooling:
+                $result = 2;
+                break;
+            }
             break;
           case $VariableTargetHeatingCoolingStateID:
             $Characteristic = "TargetHeatingCoolingState";
             $result = $data;
+
+            $VariableTargetHeatingCoolingStateID = $this->ReadPropertyInteger($TargetHeatingCoolingStateCount);
+            $TargetHeatingCoolingOff = $this->ReadPropertyInteger($TargetHeatingCoolingOffCount);
+            $TargetHeatingCoolingHeating = $this->ReadPropertyInteger($TargetHeatingCoolingHeatingCount);
+            $TargetHeatingCoolingCooling = $this->ReadPropertyInteger($TargetHeatingCoolingCoolingCount);
+            $TargetHeatingCoolingAuto = $this->ReadPropertyInteger($TargetHeatingCoolingAutoCount);
+            switch ($result) {
+              case $TargetHeatingCoolingOff:
+                $result = 0;
+                break;
+              case $TargetHeatingCoolingHeating:
+                $result = 1;
+                break;
+              case $TargetHeatingCoolingCooling:
+                $result = 2;
+                break;
+              case $TargetHeatingCoolingAuto:
+                $result = 3;
+                break;
+            }        
             break;
           case $VariableCurrentTemperatureID:
             $Characteristic = "CurrentTemperature";
