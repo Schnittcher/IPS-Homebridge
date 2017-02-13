@@ -11,10 +11,14 @@ class IPS_HomebridgeLightbulb extends IPSModule {
         $DeviceName = "DeviceName{$count}";
         $LightbulbID = "LightbulbID{$count}";
         $VariableState = "VariableState{$count}";
+        $VariableStateTrue = "VariableStateTrue{$count}";
+        $VariableStateFalse = "VariableStateFalse{$count}";
         $VariableBrightness = "VariableBrightness{$count}";
         $VariableBrightnessOptional = "VariableBrightnessOptional{$count}";
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($LightbulbID, 0);
+        $this->RegisterPropertyInteger($VariableStateTrue, 1);
+        $this->RegisterPropertyInteger($VariableStateFalse, 0);
         $this->RegisterPropertyInteger($VariableState, 0);
         $this->RegisterPropertyBoolean($VariableBrightnessOptional, false);
         $this->RegisterPropertyInteger($VariableBrightness, 0);
@@ -118,6 +122,10 @@ class IPS_HomebridgeLightbulb extends IPSModule {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "LightbulbID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableState'.$count.'", "caption": "Status" },';
+
+      $form .= '{ "type": "ValidationTextBox", "name": "VariableStateTrue'.$count.'", "caption": "Value True (On)" },';
+      $form .= '{ "type": "ValidationTextBox", "name": "VariableStateFalse'.$count.'", "caption": "Value False (Off)" },';
+
       $form .= '{ "type": "CheckBox", "name": "VariableBrightnessOptional'.$count.'", "caption": "Dimmbar?" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableBrightness'.$count.'", "caption": "Brightness" },';
       $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBLightbulb_removeAccessory('.$this->InstanceID.','.$count.');" },';
@@ -156,6 +164,9 @@ class IPS_HomebridgeLightbulb extends IPSModule {
       $VariableStateCount = "VariableState{$count}";
       $VariableBrightnessCount = "VariableBrightness{$count}";
 
+      $VariableStateTrueCount = "VariableStateTrue{$count}";
+      $VariableStateFalseCount = "VariableStateFalse{$count}";
+
       //Prüfen ob der übergebene Name aus dem Socket zu einem Namen aus der Konfirgurationsform passt
       $name = $this->ReadPropertyString("DeviceName{$count}");
       if ($DeviceName == $name) {
@@ -163,9 +174,19 @@ class IPS_HomebridgeLightbulb extends IPSModule {
         switch ($Characteristic) {
           case 'On':
             //Lightbulb State abfragen
+            $VariableStateTrue = $this->ReadPropertyInteger($VariableStateTrueCount);
+            $VariableStateFalse = $this->ReadPropertyInteger($VariableStateFalseCount);
             $VariableStateID = $this->ReadPropertyInteger($VariableStateCount);
             $result = intval(GetValue($VariableStateID));
-            $result = ($result) ? 'true' : 'false';
+            switch ($result) {
+              case $VariableStateTrue:
+                $result = 'true';
+                break;
+              case $VariableStateFalse:
+                $result = 'false';
+                break;
+            }
+            //$result = ($result) ? 'true' : 'false';
             break;
           case 'Brightness':
             //Lightbulb Brightness abfragen
@@ -191,6 +212,9 @@ class IPS_HomebridgeLightbulb extends IPSModule {
       $VariableStateCount = "VariableState{$count}";
       $VariableBrightnessCount = "VariableBrightness{$count}";
 
+      $VariableStateTrueCount = "VariableStateTrue{$count}";
+      $VariableStateFalseCount = "VariableStateFalse{$count}";
+
       //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
       $name = $this->ReadPropertyString($DeviceNameCount);
       if ($DeviceName == $name) {
@@ -199,8 +223,29 @@ class IPS_HomebridgeLightbulb extends IPSModule {
             //Lightbulb State abfragen
             $VariableStateID = $this->ReadPropertyInteger($VariableStateCount);
             $result = intval(GetValue($VariableStateID));
-            $result = ($result) ? 'true' : 'false';
-            if ($result == true && $value == 0) {
+            //$result = ($result) ? 'true' : 'false';
+
+            //Result Wert in erwartete Device Variable ändern
+            switch ($result) {
+              case $VariableStateTrue:
+                $result = 'true';
+                break;
+              case $VariableStateFalse:
+                $result = 'false';
+                break;
+            }
+
+            //Übergebnenen Wert in erwartete Device Variable ändern
+            switch ($value) {
+              case $VariableStateTrue:
+                $value = $VariableStateTrue;
+                break;
+              case $VariableStateFalse:
+                $value = $VariableStateFalse;
+                break;
+            }
+
+            if ($result == 'true' && $value == $VariableStateFalse) {
               $variable = IPS_GetVariable($VariableStateID);
               $variableObject = IPS_GetObject($VariableStateID);
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
@@ -209,7 +254,7 @@ class IPS_HomebridgeLightbulb extends IPSModule {
               IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
             }
 
-            if ($result == "false" && $value == 1) {
+            if ($result == 'false' && $value == $VariableStateTrue) {
               $variable = IPS_GetVariable($VariableStateID);
               $variableObject = IPS_GetObject($VariableStateID);
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
