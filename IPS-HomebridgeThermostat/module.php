@@ -406,7 +406,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
             $variable = IPS_GetVariable($VariableTargetHeatingCoolingStateID);
             $variableObject = IPS_GetObject($VariableTargetHeatingCoolingStateID);
 
-            switch (intval($value)) {
+            switch ($value) {
               case 0:
                 $result = $TargetHeatingCoolingOff;
                 break;
@@ -475,6 +475,19 @@ class IPS_HomebridgeThermostat extends IPSModule {
     $this->SendDebug('Remove',$SendData,0);
     $this->SendDataToParent($SendData);
     return "Gelöscht!";
+  }
+
+  public function ConvertVariable($variable, $value) {
+      switch ($variable["VariableType"]) {
+        case 0: // boolean
+          return boolval($value);
+        case 1: // integer
+          return intval($value);
+        case 2: // float
+          return floatval($value);
+        case 3: // string
+          return strval($value);
+    }
   }
 }
 ?>
