@@ -1,0 +1,11 @@
+{
+	"id": "{EAE3F35D-6344-4BD6-A103-83B8B2EBD234}",
+	"name": "IPS_HomebridgeSmokeSensor",
+	"type": 3,
+	"vendor": "",
+	"aliases": ["IPS_HomebridgeSmokeSensor"],
+	"parentRequirements": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
+	"childRequirements": [],
+	"implemented": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}"],
+	"prefix": "HBSmokeSensor"
+}
