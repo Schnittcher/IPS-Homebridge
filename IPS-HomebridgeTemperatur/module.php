@@ -1,5 +1,7 @@
 <?
-class IPS_HomebridgeTemperatur extends IPSModule {
+require_once(__DIR__ . "/../HomeKitService.php");
+
+class IPS_HomebridgeTemperatur extends HomeKitService {
   public function Create() {
       //Never delete this line!
       parent::Create();
@@ -14,7 +16,6 @@ class IPS_HomebridgeTemperatur extends IPSModule {
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($TemperaturDeviceID, 0);
         $this->RegisterPropertyInteger($VariableTemperatur, 0);
-        $this->SetBuffer($DeviceName." Temperatur ".$VariableTemperatur,"");
       }
   }
   public function ApplyChanges() {
@@ -23,53 +24,54 @@ class IPS_HomebridgeTemperatur extends IPSModule {
       //Setze Filter für ReceiveData
       $this->SetReceiveDataFilter(".*TemperatureSensor.*");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
-
+      $Devices = [];
       for($count = 1; $count-1 < $anzahl; $count++) {
+        $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
+        $Devices[$count]["VariableTemperatur"] = $this->ReadPropertyInteger("VariableTemperatur{$count}");
 
-        $DeviceNameCount = "DeviceName{$count}";
-        $VariableTemperaturCount = "VariableTemperatur{$count}";
-        $BufferName = $DeviceNameCount." Temperatur ".$VariableTemperaturCount;
-        $VariableTemperaturBuffer = $this->GetBuffer($BufferName);
-        if (is_int($VariableTemperaturBuffer)) {
-        $this->UnregisterMessage(intval($VariableTemperaturBuffer), 10603);
-        }
-        $DeviceName = $this->ReadPropertyString($DeviceNameCount);
-        if ($DeviceName != "") {
+
+        $BufferName = $Devices[$count]["DeviceName"]." Temperatur";
+
+        //Alte Registrierungen auf Variablen Veränderung aufheben
+        $UnregisterBufferIDs = [];
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferName));
+        $this->UnregisterMessages($UnregisterBufferIDs, 10603);
+
+        if ($Devices[$count]["DeviceName"] != "") {
+          //Regestriere State Variable auf Veränderungen
+          $RegisterBufferIDs = [];
+          array_push($RegisterBufferIDs,$Devices[$count]["VariableTemperatur"]);
+          $this->RegisterMessages($RegisterBufferIDs, 10603);
+          //Buffer mit den aktuellen Variablen IDs befüllen für State und Brightness
+          $this->SetBuffer($BufferName,$Devices[$count]["VariableTemperatur"]);
           //Accessory anlegen
           $this->addAccessory($DeviceName);
-          $VariableTemperaturID = $this->ReadPropertyInteger($VariableTemperaturCount);
-          //Regestriere Temperatur Variable auf Veränderungen
-          $this->RegisterMessage($VariableTemperaturID, 10603);
-          //Buffer mit der aktuellen Variablen ID befüllen
-          $this->SetBuffer($BufferName,$VariableTemperaturID);
         }
         else {
           return;
         }
       }
+      $DevicesConfig = serialize($Devices);
+      $this->SetBuffer("TemperaturSensor Config",$DevicesConfig);
     }
   public function Destroy() {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
+    $Devices = unserialize($this->getBuffer("TemperaturSensor Config"));
     if ($Data[1] == true) {
       $anzahl = $this->ReadPropertyInteger("Anzahl");
 
       for($count = 1; $count-1 < $anzahl; $count++) {
-        $DeviceNameCount = "DeviceName{$count}";
-        $VariableTemperaturCount = "VariableTemperatur{$count}";
-        $VariableTemperatur = $this->ReadPropertyInteger($VariableTemperaturCount);
+        $Device = $Devices[$count];
 
         //Prüfen ob die SenderID gleich der Temperatur Variable ist, dann den aktuellen Wert an die Bridge senden
-        if ($VariableTemperatur == $SenderID) {
-          $DeviceName = $this->ReadPropertyString($DeviceNameCount);
+        if ($Device["VariableTemperatur"] == $SenderID) {
+          $DeviceName = $Device["DeviceName"];
           $Characteristic = "CurrentTemperature";
           $data = $Data[0];
           $result = number_format($data, 2, '.', '');
-          $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-          $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-          $Data = json_encode($JSON);
-          $this->SendDataToParent($Data);
+          $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
         }
       }
     }
@@ -96,38 +98,20 @@ class IPS_HomebridgeTemperatur extends IPSModule {
     return $form;
   }
 
-  public function ReceiveData($JSONString) {
-    $this->SendDebug('ReceiveData',$JSONString, 0);
-    $data = json_decode($JSONString);
-    // Buffer decodieren und in eine Variable schreiben
-    $Buffer = utf8_decode($data->Buffer);
-    // Und Diese dann wieder dekodieren
-    $HomebridgeData = json_decode($Buffer);
-    //Prüfen ob die ankommenden Daten für den TemperatureSensor sind wenn ja, Status abfragen
-    if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "TemperatureSensor") {
-      $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
-    }
-  }
-
   public function getVar($DeviceName, $Characteristic) {
+    $Devices = unserialize($this->getBuffer("TemperaturSensor Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
 
     for($count = 1; $count -1 < $anzahl; $count++) {
-
-      //Hochzählen der Konfirgurationsform Variablen
-      $DeviceNameCount = "DeviceName{$count}";
-      $VariableTemperaturCount = "VariableTemperatur{$count}";
-      $name = $this->ReadPropertyString($DeviceNameCount);
+      $Device = $Devices[$count];
+      $name = $Device["DeviceName"];
       //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt wenn ja Wert an die Bridge senden
       if ($DeviceName == $name) {
         //IPS Variable abfragen
-        $VariableTemperaturID = $this->ReadPropertyInteger($VariableTemperaturCount);
+        $VariableTemperaturID = $Device["VariableTemperatur"];
         $result = GetValue($VariableTemperaturID);
         $result = number_format($result, 2, '.', '');
-        $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-        $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-        $Data = json_encode($JSON);
-        $this->SendDataToParent($Data);
+        $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
         return;
       }
     }
@@ -149,20 +133,6 @@ class IPS_HomebridgeTemperatur extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
-  }
-
-  public function removeAccessory($DeviceCount) {
-    //Payload bauen
-    $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
-    $payload["name"] = $DeviceName;
-
-    $array["topic"] ="remove";
-    $array["payload"] = $payload;
-    $data = json_encode($array);
-    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
-    $this->SendDebug('Remove',$SendData,0);
-    $this->SendDataToParent($SendData);
-    return "Gelöscht!";
   }
 }
 ?>
