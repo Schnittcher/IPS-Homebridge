@@ -41,7 +41,7 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
         $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
         $Devices[$count]["VariableState"] = $this->ReadPropertyInteger("VariableState{$count}");
         $Devices[$count]["VariableStateTrue"] = $this->ReadPropertyInteger("VariableStateTrue{$count}");
-        $Devices[$count]["VariableStateFalse"] =  $this->ReadPropertyInteger("VariableStateTrue{$count}");
+        $Devices[$count]["VariableStateFalse"] =  $this->ReadPropertyInteger("VariableStateFalse{$count}");
 
         $Devices[$count]["VariableBrightness"] = $this->ReadPropertyInteger("VariableBrightness{$count}");
         $Devices[$count]["VariableBrightnessMax"] = $this->ReadPropertyInteger("VariableBrightnessMax{$count}");
@@ -99,10 +99,7 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
                 $result = 'false';
                 break;
             }
-            $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-            $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-            $Data = json_encode($JSON);
-            $this->SendDataToParent($Data);
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
           case $Device["VariableBrightness"]:
             $Characteristic = "Brightness";
@@ -110,10 +107,7 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
             $VariableBrightnessMax = $Device["VariableBrightnessMax"];
             //Umrechnung
             $result = ($data / $VariableBrightnessMax) * 100;
-            $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-            $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-            $Data = json_encode($JSON);
-            $this->SendDataToParent($Data);
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
           }
         }
@@ -177,10 +171,7 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
             break;
         }
         //Status an die Bridge senden
-        $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-        $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-        $Data = json_encode($JSON);
-        $this->SendDataToParent($Data);
+        $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
         return;
       }
     }

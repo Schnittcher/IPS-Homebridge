@@ -57,5 +57,17 @@ class HomeKitService extends IPSModule {
           return strval($value);
       }
     }
+
+  protected function sendJSONToParent($topic,$Characteristic,$DeviceName,$value) {
+    $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
+
+    $array["topic"] = $topic;
+    $array["Characteristic"] = $Characteristic;
+    $array["Device"] = $DeviceName;
+    $array["value"] = $value;
+    $data = json_encode($array);
+    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
+    $this->SendDataToParent($SendData);
   }
+}
 ?>
