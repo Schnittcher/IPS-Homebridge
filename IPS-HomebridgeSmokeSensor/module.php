@@ -1,5 +1,8 @@
+
 <?
-class IPS_HomebridgeSmokeSensor extends IPSModule {
+require_once(__DIR__ . "/../HomeKitService.php");
+
+class IPS_HomebridgeSmokeSensor extends HomeKitService {
   public function Create() {
     //Never delete this line!
     parent::Create();
