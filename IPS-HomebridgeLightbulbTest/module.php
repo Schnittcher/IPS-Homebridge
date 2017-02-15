@@ -45,7 +45,7 @@ class IPS_HomebridgeLightbulbTest extends IPSModule {
         $Device["VariableBrightnessMax"] = $this->ReadPropertyInteger("VariableBrightnessMax{$count}");
         $Device["VariableBrightnessOptional"] = $this->ReadPropertyBoolean("VariableBrightnessOptional{$count}");
 
-        array_push($this->Devices, $Device):
+        array_push($this->Devices, $Device);
         $this->SendDebug('ApplyChanges',$this->Devices, 0);
 
 
