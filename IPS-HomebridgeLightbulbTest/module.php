@@ -146,7 +146,8 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
 
   public function getVar($DeviceName, $Characteristic) {
     $Devices = unserialize($this->getBuffer("Lightbulb Config"));
-    for($count = 1; $count -1 < $this->ReadPropertyInteger("Anzahl"); $count++) {
+    $anzahl = $this->ReadPropertyInteger("Anzahl");
+    for($count = 1; $count -1 < $anzahl; $count++) {
       $Device = $Devices[$count];
       $this->SendDebug('ApplyChanges',$Device["DeviceName"], 0);
       //Prüfen ob der übergebene Name aus dem Socket zu einem Namen aus der Konfirgurationsform passt
@@ -182,7 +183,8 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
 
   public function setVar($DeviceName, $value, $Characteristic) {
     $Devices = unserialize($this->getBuffer("Lightbulb Config"));
-    for($count = 1; $count -1 < $this->ReadPropertyInteger("Anzahl"); $count++) {
+    $anzahl = $this->ReadPropertyInteger("Anzahl");
+    for($count = 1; $count -1 < $anzahl; $count++) {
       $Device = $Devices[$count];
 
       //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt

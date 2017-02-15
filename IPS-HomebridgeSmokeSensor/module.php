@@ -27,47 +27,43 @@ class IPS_HomebridgeSmokeSensor extends IPSModule {
   public function ApplyChanges() {
     //Never delete this line!
     parent::ApplyChanges();
+    $this->SetReceiveDataFilter(".*SmokeSensor.*");
     $this->ConnectParent("{86C2DE8C-FB21-44B3-937A-9B09BB66FB76}");
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     for($count = 1; $count-1 < $anzahl; $count++) {
+      $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
+      $Devices[$count]["VariableSmokeDetected"] = $this->ReadPropertyString("SmokeDetected{$count}");
+      $Devices[$count]["VariableStatusTampered"] = $this->ReadPropertyString("StatusTampered{$count}");
+      $Devices[$count]["VariableStatusLowBattery"] = $this->ReadPropertyString("StatusLowBattery{$count}");
+      $Devices[$count]["SmokeDummyOptional"] = $this->ReadPropertyBoolean("SmokeDummyOptional{$count}");
       $DeviceNameCount = "DeviceName{$count}";
       $SmokeDetectedCount = "SmokeDetected{$count}";
       $StatusTamperedCount = "StatusTampered{$count}";
       $StatusLowBatteryCount = "StatusLowBattery{$count}";
 
-      $BufferNameState = $DeviceNameCount." ".$SmokeDetectedCount;
-      $BufferNameTampered = $DeviceNameCount." ".$StatusTamperedCount;
-      $BufferNameLowBattery = $DeviceNameCount." ".$StatusLowBatteryCount;
+      $BufferNameState = $Devices[$count]["DeviceName"]." SmokeDetected";
+      $BufferNameTampered = $Devices[$count]["DeviceName"]." StatusTampered";
+      $BufferNameLowBattery = $Devices[$count]["DeviceName"]." StatusLowBattery";
 
-      $VariableIDStateBuffer = $this->GetBuffer($BufferNameState);
-      $VariableIDTamperedBuffer = $this->GetBuffer($BufferNameTampered);
-      $VariableIDLowBatterytBuffer = $this->GetBuffer($BufferNameLowBattery);
+      //Alte Registrierungen auf Variablen Veränderung aufheben
+      $UnregisterBufferIDs = [];
+      array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameState));
+      array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameTampered));
+      array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameLowBattery));
+      $this->UnregisterMessages($UnregisterBufferIDs, 10603);
 
-        //Alte Registrierung auf Variablen Veränderung aufheben
-      if (is_int($VariableIDStateBuffer)) {
-        $this->UnregisterMessage(intval($VariableIDStateBuffer), 10603);
-      }
-      if (is_int($VariableIDTamperedBuffer)) {
-        $this->UnregisterMessage(intval($VariableIDTamperedBuffer), 10603);
-      }
-      if (is_int($VariableIDLowBatterytBuffer)) {
-        $this->UnregisterMessage(intval($VariableIDLowBatterytBuffer), 10603);
-      }
       if ($this->ReadPropertyString($DeviceNameCount) != "") {
         //Regestrieren der Variable auf Veränderungen
-        $NewVariableID = $this->ReadPropertyInteger($SmokeDetectedCount);
-        $this->RegisterMessage($NewVariableID, 10603);
-
-        $NewVariableID = $this->ReadPropertyInteger($StatusTamperedCount);
-        $this->RegisterMessage($NewVariableID, 10603);
-
-        $NewVariableID = $this->ReadPropertyInteger($StatusLowBatteryCount);
-        $this->RegisterMessage($NewVariableID, 10603);
+        $RegisterBufferIDs = [];
+        array_push($RegisterBufferIDs,$Devices[$count]["VariableSmokeDetected"]);
+        array_push($RegisterBufferIDs,$Devices[$count]["VariableStatusTampered"]);
+        array_push($RegisterBufferIDs,$Devices[$count]["VariableStatusLowBattery"]);
+        $this->RegisterMessages($RegisterBufferIDs, 10603);
 
         //Buffer mit den aktuellen Variablen IDs befüllen für State und Brightness
-        $this->SetBuffer($BufferNameState,$this->ReadPropertyInteger($SmokeDetectedCount));
-        $this->SetBuffer($BufferNameTampered,$this->ReadPropertyInteger($StatusTamperedCount));
-        $this->SetBuffer($BufferNameLowBattery,$this->ReadPropertyInteger($StatusLowBatteryCount));
+        $this->SetBuffer($BufferNameState,$Devices[$count]["VariableSmokeDetected"]);
+        $this->SetBuffer($BufferNameTampered,$Devices[$count]["VariableStatusTampered"]);
+        $this->SetBuffer($BufferNameLowBattery,$Devices[$count]["VariableStatusLowBattery"]);
 
         //Accessory hinzufügen
         $this->addAccessory($this->ReadPropertyString($DeviceNameCount));
@@ -75,52 +71,37 @@ class IPS_HomebridgeSmokeSensor extends IPSModule {
         return;
       }
     }
+    $DevicesConfig = serialize($Devices);
+    $this->SetBuffer("SmokeSensor Config",$DevicesConfig);
   }
 
   public function Destroy() {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
+    $Devices = unserialize($this->getBuffer("SmokeSensor Config"));
     if ($Data[1] == true) {
       $anzahl = $this->ReadPropertyInteger("Anzahl");
-
       for($count = 1; $count-1 < $anzahl; $count++) {
-        $DeviceNameCount = "DeviceName{$count}";
-        $DeviceName = $this->ReadPropertyString($DeviceNameCount);
+        $Device = $Devices[$count];
 
-        $SmokeDetectedCount = "SmokeDetected{$count}";
-        $StatusTamperedCount= "StatusTampered{$count}";
-        $StatusLowBatteryCount= "StatusLowBattery{$count}";
-
-        $SmokeDetectedID = $this->ReadPropertyInteger($SmokeDetectedCount);
-        $StatusTamperedID = $this->ReadPropertyInteger($StatusTamperedCount);
-        $StatusLowBatteryID = $this->ReadPropertyInteger($StatusLowBatteryCount);
         $data = $Data[0];
         //Prüfen ob die SenderID gleich der Variable ist, dann den aktuellen Wert an die Bridge senden
         switch ($SenderID) {
-         case $SmokeDetectedID:
+         case $Device["VariableSmokeDetected"]:
             $Characteristic = "SmokeDetected";
             $result = intval($data);
-            $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-            $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-            $Data = json_encode($JSON);
-            $this->SendDataToParent($Data);
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
           break;
-          case $StatusLowBatteryID:
-            $result = intval($data);
+          case $Device["VariableStatusLowBattery"]:
             $Characteristic ="StatusLowBattery";
-            $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-            $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-            $Data = json_encode($JSON);
-            $this->SendDataToParent($Data);
-          break;
-          case $StatusTamperedID:
             $result = intval($data);
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
+          break;
+          case $Device["VariableStatusTampered"]:
             $Characteristic ="StatusTampered";
-            $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-            $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-            $Data = json_encode($JSON);
-            $this->SendDataToParent($Data);
+            $result = intval($data);
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
           break;
 
         }
@@ -153,24 +134,11 @@ class IPS_HomebridgeSmokeSensor extends IPSModule {
     return $form;
   }
 
-  public function ReceiveData($JSONString) {
-    $data = json_decode($JSONString);
-    // Buffer decodieren und in eine Variable schreiben
-    $Buffer = utf8_decode($data->Buffer);
-    // Und Diese dann wieder dekodieren
-    $HomebridgeData = json_decode($Buffer);
-    //Prüfen ob die ankommenden Daten für den Smoke sind wenn ja, Status abfragen oder setzen
-    if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "SmokeSensor") {
-      $this->getState($HomebridgeData->Device, $HomebridgeData->Characteristic);
-    }
-    if ($HomebridgeData->Action == "set" && $HomebridgeData->Service == "SmokeSensor") {
-      $this->setState($HomebridgeData->Device, $HomebridgeData->Value, $HomebridgeData->Characteristic);
-    }
-  }
-
-  public function getState($DeviceName, $Characteristic) {
+  public function getVar($DeviceName, $Characteristic) {
+    $Devices = unserialize($this->getBuffer("SmokeSensor Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     for($count = 1; $count -1 < $anzahl; $count++) {
+      $Device = $Devices[$count];
 
       //Hochzählen der Konfirgurationsform Variablen
       $DeviceNameCount = "DeviceName{$count}";
@@ -178,62 +146,51 @@ class IPS_HomebridgeSmokeSensor extends IPSModule {
       $StatusTamperedCount = "StatusTampered{$count}";
       $StatusLowBatteryCount = "StatusLowBattery{$count}";
       //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt
-      $name = $this->ReadPropertyString($DeviceNameCount);
+      $name = $Device["DeviceName"];
       if ($DeviceName == $name) {
          //IPS Variable abfragen
          switch ($Characteristic) {
           case 'StatusLowBattery':
             //abfragen
-            $VariableID = $this->ReadPropertyInteger($StatusLowBatteryCount);
-            $result = GetValue($VariableID);
+            $result = GetValue($Device["VariableStatusLowBattery"]:);
             $result = ($result) ? '1' : '0';
             break;
           case 'StatusTampered':
             // abfragen
-            $VariableID = $this->ReadPropertyInteger($StatusTamperedCount);
-            $result = GetValue($VariableID);
+            $result = GetValue($Device["VariableStatusTampered"]:);
             $result = ($result) ? '1' : '0';
             break;
           case 'SmokeDetected':
             // abfragen
-            $VariableID = $this->ReadPropertyInteger($SmokeDetectedCount);
-            $result = GetValue($VariableID);
+            $result = GetValue($Device["VariableSmokeDetected"]:);
             $result = ($result) ? '1' : '0';
             break;
 
         }
-        $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-        $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-        $Data = json_encode($JSON);
-        $this->SendDataToParent($Data);
+        $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
         return;
       }
     }
   }
 
-  public function setState($DeviceName, $value, $Characteristic) {
+  public function setVar($DeviceName, $value, $Characteristic) {
+    $Devices = unserialize($this->getBuffer("Lightbulb Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
 
     for($count = 1; $count -1 < $anzahl; $count++) {
-
-      //Hochzählen der Konfirgurationsform Variablen
-      $DeviceNameCount = "DeviceName{$count}";
-      $SmokeDetectedCount = "SmokeDetected{$count}";
-      $StatusTamperedCount = "StatusTampered{$count}";
-      $StatusLowBatteryCount = "StatusLowBattery{$count}";
-      $DummyOptional = "SmokeDummyOptional{$count}";
+      $Device = $Devices[$count];
 
       //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt
-      $name = $this->ReadPropertyString($DeviceNameCount);
+      $name = $Device["DeviceName"];
+      $DummyOptionalValue = $Device["SmokeDummyOptional"];
       if ($DeviceName == $name) {
-        $DummyOptionalValue = $this->ReadPropertyBoolean($DummyOptional);
-
         switch ($Characteristic) {
           case 'StatusLowBattery':
             //Battery Status abfragen
-            $VariableID = $this->ReadPropertyInteger($StatusLowBatteryCount);
+            $VariableID = $Device["VariableStatusLowBattery"];
             $variable = IPS_GetVariable($VariableID);
             $variableObject = IPS_GetObject($VariableID);
+            $result = $this->ConvertVariable($variable, $value);
             if ($DummyOptionalValue == true) {
               SetValue($VariableID, $result);
             } else {
@@ -242,7 +199,7 @@ class IPS_HomebridgeSmokeSensor extends IPSModule {
             break;
           case 'StatusTampered':
             //Manipulations Status Abfragen
-            $VariableID = $this->ReadPropertyInteger($StatusTamperedCount);
+            $VariableID = $Device["VariableStatusTampered"];
             $variable = IPS_GetVariable($VariableID);
             $variableObject = IPS_GetObject($VariableID);
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
@@ -256,7 +213,7 @@ class IPS_HomebridgeSmokeSensor extends IPSModule {
             break;
           case 'SmokeDetected':
             //Raucherkennung abfragen
-            $VariableID = $this->ReadPropertyInteger($SmokeDetectedCount);
+            $VariableID = $Device["VariableSmokeDetected"];
             $variable = IPS_GetVariable($VariableID);
             $variableObject = IPS_GetObject($VariableID);
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
@@ -286,33 +243,6 @@ class IPS_HomebridgeSmokeSensor extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
-  }
-
-  public function removeAccessory($DeviceCount) {
-    $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
-    $payload["name"] = $DeviceName;
-
-    $array["topic"] ="remove";
-    $array["payload"] = $payload;
-
-    $data = json_encode($array);
-    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
-    $this->SendDebug('Remove',$SendData,0);
-    $this->SendDataToParent($SendData);
-    return "Gelöscht!";
-  }
-
-  public function ConvertVariable($variable, $state) {
-      switch ($variable["VariableType"]) {
-        case 0: // boolean
-          return boolval($state);
-        case 1: // integer
-          return intval($state);
-        case 2: // float
-          return floatval($state);
-        case 3: // string
-          return strval($state);
-    }
   }
 }
 ?>
