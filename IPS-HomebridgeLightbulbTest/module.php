@@ -88,6 +88,7 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
         $DeviceName = $Device["DeviceName"];
         //Prüfen ob die SenderID gleich der State oder Brightness Variable ist, dann den aktuellen Wert an die Bridge senden
         switch ($SenderID) {
+          //IPS Variable für die Bridge umwandeln
           case $Device["VariableState"]:
             $Characteristic = "On";
             $data = $Data[0];
@@ -155,6 +156,7 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
           case 'On':
             //Lightbulb State abfragen
             $result = intval(GetValue($Device["VariableState"]));
+            //IPS Variable für die Bridge umwandeln
             switch ($result) {
               case $Device["VariableStateTrue"]:
                 $result = 'true';
@@ -190,23 +192,13 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
             //Lightbulb State abfragen
             $result = intval(GetValue($Device["VariableState"]));
 
-            //Result Wert in erwartete Device Variable ändern
+            //IPS Variable für die Bridge umwandeln
             switch ($result) {
               case $Device["VariableStateTrue"]:
                 $result = 'true';
                 break;
               case $Device["VariableStateFalse"]:
                 $result = 'false';
-                break;
-            }
-
-            //Übergebnenen Wert in erwartete Device Variable ändern
-            switch ($value) {
-              case $Device["VariableStateTrue"]:
-                $value = $Device["VariableStateTrue"];
-                break;
-              case $Device["VariableStateFalse"]:
-                $value = $Device["VariableStateFalse"];
                 break;
             }
 
