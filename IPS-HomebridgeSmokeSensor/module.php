@@ -33,6 +33,7 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
     $this->SetReceiveDataFilter(".*SmokeSensor.*");
     $this->ConnectParent("{86C2DE8C-FB21-44B3-937A-9B09BB66FB76}");
     $anzahl = $this->ReadPropertyInteger("Anzahl");
+    $Devices = [];
     for($count = 1; $count-1 < $anzahl; $count++) {
       $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
       $Devices[$count]["VariableSmokeDetected"] = $this->ReadPropertyString("SmokeDetected{$count}");
@@ -55,7 +56,7 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
       array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameLowBattery));
       $this->UnregisterMessages($UnregisterBufferIDs, 10603);
 
-      if ($this->ReadPropertyString($DeviceNameCount) != "") {
+      if ($Devices[$count]["DeviceName"] != "") {
         //Regestrieren der Variable auf Veränderungen
         $RegisterBufferIDs = [];
         array_push($RegisterBufferIDs,$Devices[$count]["VariableSmokeDetected"]);
@@ -69,7 +70,7 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
         $this->SetBuffer($BufferNameLowBattery,$Devices[$count]["VariableStatusLowBattery"]);
 
         //Accessory hinzufügen
-        $this->addAccessory($this->ReadPropertyString($DeviceNameCount));
+        $this->addAccessory($Devices[$count]["DeviceName"]);
       } else {
         return;
       }
@@ -177,7 +178,7 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
   }
 
   public function setVar($DeviceName, $value, $Characteristic) {
-    $Devices = unserialize($this->getBuffer("Lightbulb Config"));
+    $Devices = unserialize($this->getBuffer("SmokeSensor Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
 
     for($count = 1; $count -1 < $anzahl; $count++) {
