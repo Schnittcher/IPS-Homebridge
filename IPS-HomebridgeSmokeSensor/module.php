@@ -34,7 +34,6 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
     $this->ConnectParent("{86C2DE8C-FB21-44B3-937A-9B09BB66FB76}");
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     for($count = 1; $count-1 < $anzahl; $count++) {
-      if ($this->ReadPropertyString("DeviceName{$count}") != "") {
       $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
       $Devices[$count]["VariableSmokeDetected"] = $this->ReadPropertyString("SmokeDetected{$count}");
       $Devices[$count]["VariableStatusTampered"] = $this->ReadPropertyString("StatusTampered{$count}");
@@ -71,7 +70,6 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
 
         //Accessory hinzufügen
         $this->addAccessory($this->ReadPropertyString($DeviceNameCount));
-        }
       } else {
         return;
       }
