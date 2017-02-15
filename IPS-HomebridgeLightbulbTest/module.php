@@ -1,7 +1,7 @@
 <?
 require_once(__DIR__ . "/../HomeKitService.php");
 
-class IPS_HomebridgeLightbulb extends HomeKitService {
+class IPS_HomebridgeLightbulbTest extends HomeKitService {
 
   public function Create() {
       //Never delete this line!

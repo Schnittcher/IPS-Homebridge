@@ -1,11 +1,11 @@
 {
-	"id": "{5798BF77-235B-462C-A499-240C3720170D}",
-	"name": "IPS_HomebridgeLightbulb",
+	"id": "{BE44DA1D-923B-444A-B1E7-20172F66CA4D}",
+	"name": "IPS_HomebridgeLightbulbTest",
 	"type": 3,
 	"vendor": "",
-	"aliases": ["IPS_HomebridgeLightbulb"],
+	"aliases": ["IPS_HomebridgeLightbulbTest"],
 	"parentRequirements": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
 	"childRequirements": [],
 	"implemented": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}"],
-	"prefix": "HBLightbulb"
+	"prefix": "HBLightbulbTest"
 }
