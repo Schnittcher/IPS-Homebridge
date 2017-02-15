@@ -45,7 +45,7 @@ class IPS_HomebridgeSwitch extends HomeKitService {
         if ($Devices[$count]["DeviceName"] != "") {
           //Regestriere State Variable auf Veränderungen
           $RegisterBufferIDs = [];
-          array_push($RegisterBufferIDs,$this->GetBuffer($BufferName));
+          array_push($RegisterBufferIDs,$Devices[$count]["VariableState"]);
           $this->RegisterMessages($RegisterBufferIDs, 10603);
 
           //Buffer mit den aktuellen Variablen IDs befüllen
