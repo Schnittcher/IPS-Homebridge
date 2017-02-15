@@ -1,5 +1,7 @@
 <?
-class IPS_HomebridgeHumidity extends IPSModule {
+require_once(__DIR__ . "/../HomeKitService.php");
+
+class IPS_HomebridgeHumidity extends HomeKitService {
   public function Create() {
       //Never delete this line!
       parent::Create();
@@ -14,7 +16,6 @@ class IPS_HomebridgeHumidity extends IPSModule {
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($HumidityDeviceID, 0);
         $this->RegisterPropertyInteger($VariableHumidity, 0);
-        $this->GetBuffer($DeviceName." Humidity ".$VariableHumidity,"");
       }
   }
   public function ApplyChanges() {
@@ -24,29 +25,35 @@ class IPS_HomebridgeHumidity extends IPSModule {
       $this->SetReceiveDataFilter(".*HumiditySensor.*");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
       for($count = 1; $count-1 < $anzahl; $count++) {
+        $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
+        $Devices[$count]["VariableHumidity"] = $this->ReadPropertyInteger("VariableHumidity{$count}");
+
 
         $DeviceNameCount = "DeviceName{$count}";
         $VariableHumidityCount = "VariableHumidity{$count}";
-        $BufferName = $DeviceNameCount." Humidity ".$VariableHumidityCount;
-        //Variablen ID für Humidity aus dem Buffer lesen
-        $VariableHumidityBuffer = $this->GetBuffer($BufferName);
+        $BufferName = $Devices[$count]["DeviceName"]." Humidity";
 
-        if (is_int($VariableHumidityBuffer)) {
-          //Alte Registrierung auf Variablen Veränderung aufheben
-          $this->UnregisterMessage(intval($this->GetBuffer($BufferName)), 10603);
-        }
+        //Alte Registrierung auf Variablen Veränderung aufheben
+        $UnregisterBufferIDs = [];
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferName));
+        $this->UnregisterMessages($UnregisterBufferIDs, 10603);
 
         if ($this->ReadPropertyString($DeviceNameCount) != "") {
+          //Regestriere Humidity Variable auf Veränderungen
+          $RegisterBufferIDs = [];
+          array_push($RegisterBufferIDs,$Devices[$count]["VariableHumidity"]);
+          $this->RegisterMessages($RegisterBufferIDs, 10603);
+          //Buffer mit der aktuellen Variablen ID befüllen
+          $this->SetBuffer($BufferName,$Devices[$count]["VariableHumidity"]);
+
           //Accessory anlegen
           $this->addAccessory($this->ReadPropertyString($DeviceNameCount));
-          //Regestriere Humidity Variable auf Veränderungen
-          $this->RegisterMessage($this->ReadPropertyInteger($VariableHumidityCount), 10603);
-          //Buffer mit der aktuellen Variablen ID befüllen
-          $this->SetBuffer($BufferName,$this->ReadPropertyInteger($VariableHumidityCount));
         } else {
           return;
         }
       }
+      $DevicesConfig = serialize($Devices);
+      $this->SetBuffer("Humidity Config",$DevicesConfig);
     }
 
   public function Destroy() {
@@ -54,24 +61,19 @@ class IPS_HomebridgeHumidity extends IPSModule {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
+    $Devices = unserialize($this->getBuffer("Humidity Config"));
     if ($Data[1] == true) {
       $anzahl = $this->ReadPropertyInteger("Anzahl");
-
       for($count = 1; $count-1 < $anzahl; $count++) {
+        $Device = $Devices[$count];
 
-        $DeviceNameCount = "DeviceName{$count}";
-        $VariableHumidityCount = "VariableHumidity{$count}";
-        $VariableHumidity = $this->ReadPropertyInteger($VariableHumidityCount);
+        $DeviceName = $Device["DeviceName"];
         //Prüfen ob die SenderID gleich der Humidity Variable ist, dann den aktuellen Wert an die Bridge senden
-        if ($VariableHumidity == $SenderID) {
-          $DeviceName = $this->ReadPropertyString($DeviceNameCount);
+        if ($Device["VariableHumidity"] == $SenderID) {
           $Characteristic = "CurrentRelativeHumidity";
           $data = $Data[0];
           $result = number_format($data, 2, '.', '');
-          $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-          $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-          $Data = json_encode($JSON);
-          $this->SendDataToParent($Data);
+          $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
         }
       }
     }
@@ -98,37 +100,18 @@ class IPS_HomebridgeHumidity extends IPSModule {
     return $form;
   }
 
-  public function ReceiveData($JSONString) {
-    $this->SendDebug('ReceiveData',$JSONString, 0);
-    $data = json_decode($JSONString);
-    // Buffer decodieren und in eine Variable schreiben
-    $Buffer = utf8_decode($data->Buffer);
-    // Und Diese dann wieder dekodieren
-    $HomebridgeData = json_decode($Buffer);
-    //Prüfen ob die ankommenden Daten für den HumiditySensor sind wenn ja, Status abfragen
-    if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "HumiditySensor") {
-      $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
-    }
-  }
-
   public function getVar($DeviceName, $Characteristic) {
+    $Devices = unserialize($this->getBuffer("Humidity Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
-
     for($count = 1; $count -1 < $anzahl; $count++) {
-      //Hochzählen der Konfirgurationsform Variablen
-      $DeviceNameCount = "DeviceName{$count}";
-      $VariableHumidityCount = "VariableHumidity{$count}";
+      $Device = $Devices[$count];
       //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt wenn ja Wert an die Bridge senden
-      $name = $this->ReadPropertyString($DeviceNameCount);
+      $name = $Device["DeviceName"];
       if ($DeviceName == $name) {
         //IPS Variable abfragen und zur Bridge schicken
-        $VariableHumidityID = $this->ReadPropertyInteger($VariableHumidityCount);
-        $result = GetValue($VariableHumidityID);
+        $result = GetValue($Device["VariableHumidity"]);
         $result = number_format($result, 2, '.', '');
-        $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-        $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-        $Data = json_encode($JSON);
-        $this->SendDataToParent($Data);
+        $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
         return;
       }
     }
@@ -144,20 +127,6 @@ class IPS_HomebridgeHumidity extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
-  }
-
-  public function removeAccessory($DeviceCount) {
-    //Payload bauen
-    $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
-    $payload["name"] = $DeviceName;
-
-    $array["topic"] ="remove";
-    $array["payload"] = $payload;
-    $data = json_encode($array);
-    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
-    $this->SendDebug('Remove',$SendData,0);
-    $this->SendDataToParent($SendData);
-    return "Gelöscht!";
   }
 }
 ?>

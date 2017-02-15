@@ -82,6 +82,7 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
     $Devices = unserialize($this->getBuffer("Lightbulb Config"));
     if ($Data[1] == true) {
+      $anzahl = $this->ReadPropertyInteger("Anzahl");
       for($count = 1; $count-1 < $anzahl; $count++) {
         $Device = $Devices[$count];
 
