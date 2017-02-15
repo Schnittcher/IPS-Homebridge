@@ -65,7 +65,7 @@ class IPS_HomebridgeSwitch extends HomeKitService {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
-    $Devices = unserialize($this->getBuffer("Lightbulb Config"));
+    $Devices = unserialize($this->getBuffer("Switch Config"));
     if ($Data[1] == true) {
       $anzahl = $this->ReadPropertyInteger("Anzahl");
       for($count = 1; $count-1 < $anzahl; $count++) {
@@ -107,7 +107,7 @@ class IPS_HomebridgeSwitch extends HomeKitService {
   }
 
   public function getVar($DeviceName, $Characteristic) {
-    $Devices = unserialize($this->getBuffer("Lightbulb Config"));
+    $Devices = unserialize($this->getBuffer("Switch Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     for($count = 1; $count -1 < $anzahl; $count++) {
       $Device = $Devices[$count];
@@ -125,7 +125,7 @@ class IPS_HomebridgeSwitch extends HomeKitService {
   }
 
   public function setVar($DeviceName, $state, $variable) {
-    $Devices = unserialize($this->getBuffer("Lightbulb Config"));
+    $Devices = unserialize($this->getBuffer("Switch Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     for($count = 1; $count -1 < $anzahl; $count++) {
       $Device = $Devices[$count];
