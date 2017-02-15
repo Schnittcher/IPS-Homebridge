@@ -31,7 +31,7 @@ class HomeKitService extends IPSModule {
     }
   }
 
-    protected function removeAccessory($DeviceCount) {
+    public function removeAccessory($DeviceCount) {
     //Payload bauen
     $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
     $payload["name"] = $DeviceName;
