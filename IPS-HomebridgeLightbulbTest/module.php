@@ -148,24 +148,6 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
     return $form;
   }
 
-  public function ReceiveData($JSONString) {
-    $this->SendDebug('ReceiveData',$JSONString, 0);
-    $data = json_decode($JSONString);
-    // Buffer decodieren und in eine Variable schreiben
-    $Buffer = utf8_decode($data->Buffer);
-    // Und Diese dann wieder dekodieren
-    $HomebridgeData = json_decode($Buffer);
-
-    //Prüfen ob die ankommenden Daten für den Lightbulb sind wenn ja, Status abfragen
-    if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "Lightbulb") {
-      $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
-    }
-    //Prüfen ob die ankommenden Daten für den Lightbulb sind wenn ja, Status setzen
-    if ($HomebridgeData->Action == "set" && $HomebridgeData->Service == "Lightbulb") {
-      $this->setVar($HomebridgeData->Device, $HomebridgeData->Value, $HomebridgeData->Characteristic);
-    }
-  }
-
   public function getVar($DeviceName, $Characteristic) {
     $Devices = unserialize($this->getBuffer("Lightbulb Config"));
     for($count = 1; $count -1 < $this->ReadPropertyInteger("Anzahl"); $count++) {
