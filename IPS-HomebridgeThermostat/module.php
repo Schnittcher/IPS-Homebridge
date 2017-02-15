@@ -99,7 +99,7 @@ class IPS_HomebridgeThermostat extends IPSModule {
           $this->SetBuffer($BufferNameBrightness,$Devices[$count]["TargetTemperature"]);
 
           //Accessory anlegen
-          $this->addAccessory($DeviceName);
+          $this->addAccessory($Devices[$count]["DeviceName"]);
         }
         else {
           return;
