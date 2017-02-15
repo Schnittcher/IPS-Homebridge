@@ -1,5 +1,7 @@
 <?
-class IPS_HomebridgeThermostat extends IPSModule {
+require_once(__DIR__ . "/../HomeKitService.php");
+
+class IPS_HomebridgeThermostat extends HomeKitService {
   public function Create() {
       //Never delete this line!
       parent::Create();
