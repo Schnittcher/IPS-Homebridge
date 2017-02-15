@@ -1,7 +1,7 @@
 <?
 class HomeKitService extends IPSModule {
 
-  protected function ReceiveData($JSONString) {
+  public function ReceiveData($JSONString) {
     $this->SendDebug('ReceiveData',$JSONString, 0);
     $data = json_decode($JSONString);
     // Buffer decodieren und in eine Variable schreiben
