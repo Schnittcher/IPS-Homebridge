@@ -1,7 +1,7 @@
 <?
 class HomeKitService extends IPSModule {
 
-  public function ReceiveData($JSONString) {
+  protected function ReceiveData($JSONString) {
     $this->SendDebug('ReceiveData',$JSONString, 0);
     $data = json_decode($JSONString);
     // Buffer decodieren und in eine Variable schreiben
@@ -19,19 +19,19 @@ class HomeKitService extends IPSModule {
     }
   }
 
-  private function RegisterMessages($SenderIDs, $NachrichtenID) {
+  protected function RegisterMessages($SenderIDs, $NachrichtenID) {
     foreach ($SenderIDs as $SenderID) {
       $this->RegisterMessage(intval($SenderID), $NachrichtenID);
     }
   }
 
-  private function UnregisterMessages($SenderIDs, $NachrichtenID) {
+  protected function UnregisterMessages($SenderIDs, $NachrichtenID) {
     foreach ($SenderIDs as $SenderID) {
       $this->UnregisterMessage(intval($SenderID), $NachrichtenID);
     }
   }
 
-    public function removeAccessory($DeviceCount) {
+    protected function removeAccessory($DeviceCount) {
     //Payload bauen
     $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
     $payload["name"] = $DeviceName;
@@ -45,7 +45,7 @@ class HomeKitService extends IPSModule {
     return "Gelöscht!";
     }
 
-    public function ConvertVariable($variable, $value) {
+    protected function ConvertVariable($variable, $value) {
       switch ($variable["VariableType"]) {
         case 0: // boolean
           return boolval($value);
