@@ -31,7 +31,7 @@ class IPS_HomebridgeLightbulbTest extends IPSModule {
 
   public function ApplyChanges() {
       //Never delete this line!
-      parent::ApplyChanges();
+
       //Setze Filter für ReceiveData
       $this->SetReceiveDataFilter(".*Lightbulb.*");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
@@ -92,7 +92,7 @@ class IPS_HomebridgeLightbulbTest extends IPSModule {
           return;
         }
       }
-
+      parent::ApplyChanges();
     }
 
   public function Destroy() {
