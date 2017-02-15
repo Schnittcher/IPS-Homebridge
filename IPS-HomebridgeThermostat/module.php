@@ -265,12 +265,12 @@ class IPS_HomebridgeThermostat extends IPSModule {
             }
             break;
           case 'CurrentTemperature':
-            $VariableCurrentTemperatureID = $Device["CurrentTemperature"]);
+            $VariableCurrentTemperatureID = $Device["CurrentTemperature"];
             $result = GetValue($VariableCurrentTemperatureID);
             $result = number_format($result, 2, '.', '');
             break;
           case 'TargetTemperature':
-            $VariableTargetTemperatureID = $Device["TargetTemperature"]);
+            $VariableTargetTemperatureID = $Device["TargetTemperature"];
             $result = GetValue($VariableTargetTemperatureID);
             $result = number_format($result, 2, '.', '');
             break;
