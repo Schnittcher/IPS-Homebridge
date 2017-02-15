@@ -19,7 +19,6 @@ class IPS_HomebridgeSwitch extends HomeKitService {
         $this->RegisterPropertyInteger($SwitchID, 0);
         $this->RegisterPropertyInteger($VariableState, 0);
         $this->RegisterPropertyBoolean($SwitchDummyOptional, false);
-        $this->SetBuffer($DeviceName." Switch ".$VariableState,"");
       }
   }
   public function ApplyChanges() {
@@ -32,8 +31,8 @@ class IPS_HomebridgeSwitch extends HomeKitService {
 
       for($count = 1; $count-1 < $anzahl; $count++) {
         $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
-        $Devices[$count]["VariableState"] = $this->ReadPropertyString("VariableState{$count}");
-        $Devices[$count]["DummyOptional"] = $this->ReadPropertyString("SwitchDummyOptional{$count}");
+        $Devices[$count]["VariableState"] = $this->ReadPropertyInteger("VariableState{$count}");
+        $Devices[$count]["DummyOptional"] = $this->ReadPropertyBoolean("SwitchDummyOptional{$count}");
 
         $BufferName = $Devices[$count]["DeviceName"]." State";
 
