@@ -52,8 +52,8 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
 
         //Alte Registrierungen auf Variablen Veränderung aufheben
         $UnregisterBufferIDs = [];
-        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameState))
-        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameBrightness))
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameState));
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameBrightness));
         $this->UnregisterMessages($UnregisterBufferIDs, 10603);
 
         if ($Devices[$count]["DeviceName"] != "") {
