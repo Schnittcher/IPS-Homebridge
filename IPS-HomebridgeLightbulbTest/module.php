@@ -36,6 +36,7 @@ class IPS_HomebridgeLightbulbTest extends IPSModule {
       $this->SetReceiveDataFilter(".*Lightbulb.*");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
       for($count = 1; $count-1 < $anzahl; $count++) {
+        $Device = [];
         $Device["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
         $Device["VariableState"] = $this->ReadPropertyInteger("VariableState{$count}");
         $Device["VariableStateTrue"] = $this->ReadPropertyInteger("VariableStateTrue{$count}");
@@ -46,7 +47,7 @@ class IPS_HomebridgeLightbulbTest extends IPSModule {
         $Device["VariableBrightnessOptional"] = $this->ReadPropertyBoolean("VariableBrightnessOptional{$count}");
 
         array_push($this->Devices, $Device);
-        $this->SendDebug('ApplyChanges',$this->Devices, 0);
+        $this->SendDebug('ApplyChanges',$Device, 0);
 
 
 /**
