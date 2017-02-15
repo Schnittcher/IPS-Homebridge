@@ -95,10 +95,10 @@ class IPS_HomebridgeThermostat extends HomeKitService {
           $this->RegisterMessages($RegisterBufferIDs, 10603);
 
           //Buffer mit den aktuellen Variablen IDs befüllen
-          $this->SetBuffer($BufferNameState,$Devices[$count]["CurrentHeatingCoolingState"]);
-          $this->SetBuffer($BufferNameBrightness,$Devices[$count]["TargetHeatingCoolingState"]);
-          $this->SetBuffer($BufferNameState,$Devices[$count]["CurrentTemperature"]);
-          $this->SetBuffer($BufferNameBrightness,$Devices[$count]["TargetTemperature"]);
+          $this->SetBuffer($BufferNameCurrentHeatingCoolingState,$Devices[$count]["CurrentHeatingCoolingState"]);
+          $this->SetBuffer($BufferNameTargetHeatingCoolingState,$Devices[$count]["TargetHeatingCoolingState"]);
+          $this->SetBuffer($BufferNameCurrentTemperature,$Devices[$count]["CurrentTemperature"]);
+          $this->SetBuffer($BufferNameTargetTemperature,$Devices[$count]["TargetTemperature"]);
 
           //Accessory anlegen
           $this->addAccessory($Devices[$count]["DeviceName"]);
