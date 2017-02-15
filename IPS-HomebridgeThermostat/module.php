@@ -55,99 +55,78 @@ class IPS_HomebridgeThermostat extends IPSModule {
       $anzahl = $this->ReadPropertyInteger("Anzahl");
 
       for($count = 1; $count-1 < $anzahl; $count++) {
-        //Hochzäglen
-        $DeviceNameCount = "DeviceName{$count}";
-        $ThermostatIDCount = "ThermostatID{$count}";
-        $CurrentHeatingCoolingStateCount = "CurrentHeatingCoolingState{$count}";
-        $TargetHeatingCoolingStateCount = "TargetHeatingCoolingState{$count}";
-        $CurrentTemperatureCount = "CurrentTemperature{$count}";
-        $TargetTemperatureCount = "TargetTemperature{$count}";
+        $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
+        $Devices[$count]["CurrentHeatingCoolingState"] = $this->ReadPropertyInteger("DeviceName{$count}");
+        $Devices[$count]["TargetHeatingCoolingState"] = $this->ReadPropertyInteger("DeviceName{$count}");
+        $Devices[$count]["CurrentTemperature"] = $this->ReadPropertyInteger("DeviceName{$count}");
+        $Devices[$count]["TargetTemperature"] = $this->ReadPropertyInteger("DeviceName{$count}");
+
+        $Devices[$count]["CurrentHeatingCoolingOff"] = $this->ReadPropertyInteger("CurrentHeatingCoolingOff{$count}");
+        $Devices[$count]["CurrentHeatingCoolingHeating"] = $this->ReadPropertyInteger("CurrentHeatingCoolingHeating{$count}");
+        $Devices[$count]["CurrentHeatingCoolingCooling"] = $this->ReadPropertyInteger("CurrentHeatingCoolingCooling{$count}");
+        $Devices[$count]["TargetHeatingCoolingOff"] = $this->ReadPropertyInteger("TargetHeatingCoolingOff{$count}");
+        $Devices[$count]["TargetHeatingCoolingHeating"] = $this->ReadPropertyInteger("TargetHeatingCoolingHeating{$count}");
+        $Devices[$count]["TargetHeatingCoolingCooling"] = $this->ReadPropertyInteger("TargetHeatingCoolingCooling{$count}");
+        $Devices[$count]["TargetHeatingCoolingAuto"] = $this->ReadPropertyInteger("TargetHeatingCoolingAuto{$count}");
+
         //Buffernamen
-        $BufferNameCurrentHeatingCoolingState = $DeviceNameCount." ".$CurrentHeatingCoolingStateCount;
-        $BufferNameTargetHeatingCoolingState = $DeviceNameCount." ".$TargetHeatingCoolingStateCount;
-        $BufferNameCurrentTemperature = $DeviceNameCount." ".$CurrentTemperatureCount;
-        $BufferNameTargetTemperature = $DeviceNameCount." ".$TargetTemperatureCount;
-        //Buffer auslesen
-        $VariableCurrentHeatingCoolingStateBuffer = $this->GetBuffer($BufferNameCurrentHeatingCoolingState);
-        $VariableTargetHeatingCoolingStateBuffer = $this->GetBuffer($BufferNameTargetHeatingCoolingState);
-        $VariableCurrentTemperatureBuffer = $this->GetBuffer($BufferNameCurrentTemperature);
-        $VariableNameTargetTemperatureBuffer = $this->GetBuffer($BufferNameTargetTemperature);
+        $BufferNameCurrentHeatingCoolingState = $Devices[$count]["DeviceName"]." CurrentHeatingCoolingState";
+        $BufferNameTargetHeatingCoolingState = $Devices[$count]["DeviceName"]." TargetHeatingCoolingState";
+        $BufferNameCurrentTemperature = $Devices[$count]["DeviceName"]." CurrentTemperature";
+        $BufferNameTargetTemperature = $Devices[$count]["DeviceName"]." TargetTemperature";
 
-        if (is_int($VariableCurrentHeatingCoolingStateBuffer)) {
-        $this->UnregisterMessage(intval($VariableCurrentHeatingCoolingStateBuffer), 10603);
-        }
-        if (is_int($VariableTargetHeatingCoolingStateBuffer)) {
-        $this->UnregisterMessage(intval($VariableTargetHeatingCoolingStateBuffer), 10603);
-        }
-        if (is_int($VariableCurrentTemperatureBuffer)) {
-        $this->UnregisterMessage(intval($VariableCurrentTemperatureBuffer), 10603);
-        }
-        if (is_int($VariableNameTargetTemperatureBuffer)) {
-        $this->UnregisterMessage(intval($VariableNameTargetTemperatureBuffer), 10603);
-        }
+        //Alte Registrierungen auf Variablen Veränderung aufheben
+        $UnregisterBufferIDs = [];
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameCurrentHeatingCoolingState));
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameTargetHeatingCoolingState));
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameCurrentTemperature));
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameTargetTemperature));
+        $this->UnregisterMessages($UnregisterBufferIDs, 10603);
 
-        $DeviceName = $this->ReadPropertyString($DeviceNameCount);
-        if ($DeviceName != "") {
+        if ($Devices[$count]["DeviceName"] != "") {
+          //Regestriere State Variable auf Veränderungen
+          $RegisterBufferIDs = [];
+          array_push($RegisterBufferIDs,$Devices[$count]["CurrentHeatingCoolingState"]);
+          array_push($RegisterBufferIDs,$Devices[$count]["TargetHeatingCoolingState"]);
+          array_push($RegisterBufferIDs,$Devices[$count]["CurrentTemperature"]);
+          array_push($RegisterBufferIDs,$Devices[$count]["TargetTemperature"]);
+          $this->RegisterMessages($RegisterBufferIDs, 10603);
+
+          //Buffer mit den aktuellen Variablen IDs befüllen
+          $this->SetBuffer($BufferNameState,$Devices[$count]["CurrentHeatingCoolingState"]);
+          $this->SetBuffer($BufferNameBrightness,$Devices[$count]["TargetHeatingCoolingState"]);
+          $this->SetBuffer($BufferNameState,$Devices[$count]["CurrentTemperature"]);
+          $this->SetBuffer($BufferNameBrightness,$Devices[$count]["TargetTemperature"]);
+
           //Accessory anlegen
           $this->addAccessory($DeviceName);
-
-          $VariableCurrentHeatingCoolingStateID = $this->ReadPropertyInteger($CurrentHeatingCoolingStateCount);
-          $VariableTargetHeatingCoolingStateID = $this->ReadPropertyInteger($TargetHeatingCoolingStateCount);
-          $VariableCurrentTemperatureID = $this->ReadPropertyInteger($CurrentTemperatureCount);
-          $VariableNameTargetTemperatureID = $this->ReadPropertyInteger($TargetTemperatureCount);
-          //Regestriere Variablen auf Veränderungen
-          $this->RegisterMessage($VariableCurrentHeatingCoolingStateID, 10603);
-          $this->RegisterMessage($VariableTargetHeatingCoolingStateID, 10603);
-          $this->RegisterMessage($VariableCurrentTemperatureID, 10603);
-          $this->RegisterMessage($VariableNameTargetTemperatureID, 10603);
-          //Buffer mit der aktuellen Variablen ID befüllen
-          $this->SetBuffer($BufferNameCurrentHeatingCoolingState,$VariableCurrentHeatingCoolingStateID);
-          $this->SetBuffer($BufferNameTargetHeatingCoolingState,$VariableTargetHeatingCoolingStateID);
-          $this->SetBuffer($BufferNameCurrentTemperature,$VariableCurrentTemperatureID);
-          $this->SetBuffer($BufferNameTargetTemperature,$VariableNameTargetTemperatureID);
         }
         else {
           return;
         }
       }
+      $DevicesConfig = serialize($Devices);
+      $this->SetBuffer("Thermostat Config",$DevicesConfig);
     }
   public function Destroy() {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
+    $Devices = unserialize($this->getBuffer("Thermostat Config"));
     if ($Data[1] == true) {
       $anzahl = $this->ReadPropertyInteger("Anzahl");
 
       for($count = 1; $count-1 < $anzahl; $count++) {
-        $DeviceNameCount = "DeviceName{$count}";
-        $CurrentHeatingCoolingStateCount = "CurrentHeatingCoolingState{$count}";
-        $TargetHeatingCoolingStateCount = "TargetHeatingCoolingState{$count}";
-        $CurrentTemperatureCount = "CurrentTemperature{$count}";
-        $TargetTemperatureCount = "TargetTemperature{$count}";
+        $Device = $Devices[$count];
 
-        $VariableCurrentHeatingCoolingStateID = $this->ReadPropertyInteger($CurrentHeatingCoolingStateCount);
-        $VariableTargetHeatingCoolingStateID = $this->ReadPropertyInteger($TargetHeatingCoolingStateCount);
-        $VariableCurrentTemperatureID = $this->ReadPropertyInteger($CurrentTemperatureCount);
-        $VariableTargetTemperatureID = $this->ReadPropertyInteger($TargetTemperatureCount);
-
-
-        $CurrentHeatingCoolingOffCount = "CurrentHeatingCoolingOff{$count}";
-        $CurrentHeatingCoolingHeatingCount ="CurrentHeatingCoolingHeating{$count}";
-        $CurrentHeatingCoolingCoolingCount ="CurrentHeatingCoolingCooling{$count}";
-
-        $TargetHeatingCoolingOffCount = "TargetHeatingCoolingOff{$count}";
-        $TargetHeatingCoolingHeatingCount = "TargetHeatingCoolingHeating{$count}";
-        $TargetHeatingCoolingCoolingCount = "TargetHeatingCoolingCooling{$count}";
-        $TargetHeatingCoolingAutoCount = "TargetHeatingCoolingAuto{$count}";
-
-        $DeviceName = $this->ReadPropertyString($DeviceNameCount);
+        $DeviceName = $Device["DeviceName"];
         $data = $Data[0];
         //Prüfen ob die SenderID gleich der Temperatur Variable ist, dann den aktuellen Wert an die Bridge senden
         switch ($SenderID) {
-          case $VariableCurrentHeatingCoolingStateID:
-            $CurrentHeatingCoolingOff = $this->ReadPropertyInteger($CurrentHeatingCoolingOffCount);
-            $CurrentHeatingCoolingHeating = $this->ReadPropertyInteger($CurrentHeatingCoolingHeatingCount);
-            $CurrentHeatingCoolingCooling = $this->ReadPropertyInteger($CurrentHeatingCoolingCoolingCount);
+          case $Device["CurrentHeatingCoolingState"]:
+            $CurrentHeatingCoolingOff = $Device["CurrentHeatingCoolingOff"];
+            $CurrentHeatingCoolingHeating = $Device["CurrentHeatingCoolingHeating"];
+            $CurrentHeatingCoolingCooling = $Device["CurrentHeatingCoolingCooling"];
             $Characteristic = "CurrentHeatingCoolingState";
             $result = $data;
             switch ($result) {
@@ -162,15 +141,15 @@ class IPS_HomebridgeThermostat extends IPSModule {
                 break;
             }
             break;
-          case $VariableTargetHeatingCoolingStateID:
+          case $Device["TargetHeatingCoolingState"]:
             $Characteristic = "TargetHeatingCoolingState";
             $result = $data;
 
-            $VariableTargetHeatingCoolingStateID = $this->ReadPropertyInteger($TargetHeatingCoolingStateCount);
-            $TargetHeatingCoolingOff = $this->ReadPropertyInteger($TargetHeatingCoolingOffCount);
-            $TargetHeatingCoolingHeating = $this->ReadPropertyInteger($TargetHeatingCoolingHeatingCount);
-            $TargetHeatingCoolingCooling = $this->ReadPropertyInteger($TargetHeatingCoolingCoolingCount);
-            $TargetHeatingCoolingAuto = $this->ReadPropertyInteger($TargetHeatingCoolingAutoCount);
+            $VariableTargetHeatingCoolingStateID = $Device["TargetHeatingCoolingState"];
+            $TargetHeatingCoolingOff = $Device["TargetHeatingCoolingOff"];
+            $TargetHeatingCoolingHeating = $Device["TargetHeatingCoolingHeating"];
+            $TargetHeatingCoolingCooling = $Device["TargetHeatingCoolingCooling"];
+            $TargetHeatingCoolingAuto = $Device["TargetHeatingCoolingAuto"];
             switch ($result) {
               case $TargetHeatingCoolingOff:
                 $result = 0;
@@ -186,19 +165,16 @@ class IPS_HomebridgeThermostat extends IPSModule {
                 break;
             }
             break;
-          case $VariableCurrentTemperatureID:
+          case $Device["CurrentTemperature"]:
             $Characteristic = "CurrentTemperature";
             $result = number_format($data, 2, '.', '');
             break;
-          case $VariableTargetTemperatureID:
+          case $Device["TargetTemperature"]:
             $Characteristic = "TargetTemperature";
             $result = number_format($data, 2, '.', '');
             break;
         }
-        $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-        $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-        $Data = json_encode($JSON);
-        $this->SendDataToParent($Data);
+        $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
       }
     }
   }
@@ -238,57 +214,20 @@ class IPS_HomebridgeThermostat extends IPSModule {
     return $form;
   }
 
-
-  public function ReceiveData($JSONString) {
-    $this->SendDebug('ReceiveData',$JSONString, 0);
-    $data = json_decode($JSONString);
-    // Buffer decodieren und in eine Variable schreiben
-    $Buffer = utf8_decode($data->Buffer);
-    // Und Diese dann wieder dekodieren
-    $HomebridgeData = json_decode($Buffer);
-    //Prüfen ob die ankommenden Daten für den Switch sind wenn ja, Status abfragen oder setzen
-    if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "Thermostat") {
-      $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
-    }
-    if ($HomebridgeData->Action == "set" && $HomebridgeData->Service == "Thermostat") {
-      $this->setVar($HomebridgeData->Device, $HomebridgeData->Value, $HomebridgeData->Characteristic);
-    }
-  }
-
-
   public function getVar($DeviceName, $Characteristic) {
+    $Devices = unserialize($this->getBuffer("Thermostat Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
-
     for($count = 1; $count -1 < $anzahl; $count++) {
-
-      //Hochzählen der Konfirgurationsform Variablen
-      $DeviceNameCount = "DeviceName{$count}";
-      $ThermostatID = "ThermostatID{$count}";
-
-      $CurrentHeatingCoolingStateCount = "CurrentHeatingCoolingState{$count}";
-      $TargetHeatingCoolingStateCount = "TargetHeatingCoolingState{$count}";
-      $CurrentTemperatureCount = "CurrentTemperature{$count}";
-      $TargetTemperatureCount = "TargetTemperature{$count}";
-
-      $CurrentHeatingCoolingOffCount = "CurrentHeatingCoolingOff{$count}";
-      $CurrentHeatingCoolingHeatingCount ="CurrentHeatingCoolingHeating{$count}";
-      $CurrentHeatingCoolingCoolingCount ="CurrentHeatingCoolingCooling{$count}";
-
-      $TargetHeatingCoolingOffCount = "TargetHeatingCoolingOff{$count}";
-      $TargetHeatingCoolingHeatingCount = "TargetHeatingCoolingHeating{$count}";
-      $TargetHeatingCoolingCoolingCount = "TargetHeatingCoolingCooling{$count}";
-      $TargetHeatingCoolingAutoCount = "TargetHeatingCoolingAuto{$count}";
-
-      $name = $this->ReadPropertyString($DeviceNameCount);
+      $Device = $Devices[$count];
+      $name = $Device["DeviceName"];
       //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt wenn ja Wert an die Bridge senden
       if ($DeviceName == $name) {
-
         switch ($Characteristic) {
           case 'CurrentHeatingCoolingState':
-            $VariableCurrentHeatingCoolingStateID = $this->ReadPropertyInteger($CurrentHeatingCoolingStateCount);
-            $CurrentHeatingCoolingOff = $this->ReadPropertyInteger($CurrentHeatingCoolingOffCount);
-            $CurrentHeatingCoolingHeating = $this->ReadPropertyInteger($CurrentHeatingCoolingHeatingCount);
-            $CurrentHeatingCoolingCooling = $this->ReadPropertyInteger($CurrentHeatingCoolingCoolingCount);
+            $VariableCurrentHeatingCoolingStateID = $Device["CurrentHeatingCoolingState"];
+            $CurrentHeatingCoolingOff = $Device["CurrentHeatingCoolingOff"];
+            $CurrentHeatingCoolingHeating = $Device["CurrentHeatingCoolingHeating"];
+            $CurrentHeatingCoolingCooling = $Device["CurrentHeatingCoolingCooling"];
 
             $result = intval(GetValue($VariableCurrentHeatingCoolingStateID));
             switch ($result) {
@@ -304,12 +243,11 @@ class IPS_HomebridgeThermostat extends IPSModule {
             }
             break;
           case 'TargetHeatingCoolingState':
-            $VariableTargetHeatingCoolingStateID = $this->ReadPropertyInteger($TargetHeatingCoolingStateCount);
-            $TargetHeatingCoolingOff = $this->ReadPropertyInteger($TargetHeatingCoolingOffCount);
-            $TargetHeatingCoolingHeating = $this->ReadPropertyInteger($TargetHeatingCoolingHeatingCount);
-            $TargetHeatingCoolingCooling = $this->ReadPropertyInteger($TargetHeatingCoolingCoolingCount);
-            $TargetHeatingCoolingAuto = $this->ReadPropertyInteger($TargetHeatingCoolingAutoCount);
-
+          $VariableTargetHeatingCoolingStateID = $Device["TargetHeatingCoolingState"];
+          $TargetHeatingCoolingOff = $Device["TargetHeatingCoolingOff"];
+          $TargetHeatingCoolingHeating = $Device["TargetHeatingCoolingHeating"];
+          $TargetHeatingCoolingCooling = $Device["TargetHeatingCoolingCooling"];
+          $TargetHeatingCoolingAuto = $Device["TargetHeatingCoolingAuto"];
             $result = intval(GetValue($VariableTargetHeatingCoolingStateID));
             switch ($result) {
               case $TargetHeatingCoolingOff:
@@ -327,12 +265,12 @@ class IPS_HomebridgeThermostat extends IPSModule {
             }
             break;
           case 'CurrentTemperature':
-            $VariableCurrentTemperatureID = $this->ReadPropertyInteger($CurrentTemperatureCount);
+            $VariableCurrentTemperatureID = $Device["CurrentTemperature"]);
             $result = GetValue($VariableCurrentTemperatureID);
             $result = number_format($result, 2, '.', '');
             break;
           case 'TargetTemperature':
-            $VariableTargetTemperatureID = $this->ReadPropertyInteger($TargetTemperatureCount);
+            $VariableTargetTemperatureID = $Device["TargetTemperature"]);
             $result = GetValue($VariableTargetTemperatureID);
             $result = number_format($result, 2, '.', '');
             break;
@@ -340,43 +278,25 @@ class IPS_HomebridgeThermostat extends IPSModule {
             $result = 0;
             break;
           }
-        $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-        $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-        $Data = json_encode($JSON);
-        $this->SendDataToParent($Data);
+        $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
         return;
       }
     }
   }
 
   public function setVar($DeviceName, $value, $Characteristic) {
+    $Devices = unserialize($this->getBuffer("Thermostat Config"));
     for($count = 1; $count -1 < $this->ReadPropertyInteger("Anzahl"); $count++) {
-      $DeviceNameCount = "DeviceName{$count}";
-      $ThermostatID = "ThermostatID{$count}";
-
-      $CurrentHeatingCoolingStateCount = "CurrentHeatingCoolingState{$count}";
-      $TargetHeatingCoolingStateCount = "TargetHeatingCoolingState{$count}";
-      $CurrentTemperatureCount = "CurrentTemperature{$count}";
-      $TargetTemperatureCount = "TargetTemperature{$count}";
-
-      $CurrentHeatingCoolingOffCount = "CurrentHeatingCoolingOff{$count}";
-      $CurrentHeatingCoolingHeatingCount ="CurrentHeatingCoolingHeating{$count}";
-      $CurrentHeatingCoolingCoolingCount ="CurrentHeatingCoolingCooling{$count}";
-
-      $TargetHeatingCoolingOffCount = "TargetHeatingCoolingOff{$count}";
-      $TargetHeatingCoolingHeatingCount = "TargetHeatingCoolingHeating{$count}";
-      $TargetHeatingCoolingCoolingCount = "TargetHeatingCoolingCooling{$count}";
-      $TargetHeatingCoolingAutoCount = "TargetHeatingCoolingAuto{$count}";
-
+      $Device = $Devices[$count];
       //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt
-      $name = $this->ReadPropertyString($DeviceNameCount);
+      $name = $Device["DeviceName"];
       if ($DeviceName == $name) {
         switch ($Characteristic) {
           case 'CurrentHeatingCoolingState':
-            $VariableCurrentHeatingCoolingStateID = $this->ReadPropertyInteger($CurrentHeatingCoolingStateCount);
-            $CurrentHeatingCoolingOff = $this->ReadPropertyInteger($CurrentHeatingCoolingOffCount);
-            $CurrentHeatingCoolingHeating = $this->ReadPropertyInteger($CurrentHeatingCoolingHeatingCount);
-            $CurrentHeatingCoolingCooling = $this->ReadPropertyInteger($CurrentHeatingCoolingCoolingCount);
+            $VariableCurrentHeatingCoolingStateID = $Device["CurrentHeatingCoolingState"];
+            $CurrentHeatingCoolingOff = $Device["CurrentHeatingCoolingOff"];
+            $CurrentHeatingCoolingHeating = $Device["CurrentHeatingCoolingHeating"];
+            $CurrentHeatingCoolingCooling = $Device["CurrentHeatingCoolingCooling"];
 
             $variable = IPS_GetVariable($VariableCurrentHeatingCoolingStateID);
             $variableObject = IPS_GetObject($VariableCurrentHeatingCoolingStateID);
@@ -397,11 +317,11 @@ class IPS_HomebridgeThermostat extends IPSModule {
             IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
             break;
           case 'TargetHeatingCoolingState':
-            $VariableTargetHeatingCoolingStateID = $this->ReadPropertyInteger($TargetHeatingCoolingStateCount);
-            $TargetHeatingCoolingOff = $this->ReadPropertyInteger($TargetHeatingCoolingOffCount);
-            $TargetHeatingCoolingHeating = $this->ReadPropertyInteger($TargetHeatingCoolingHeatingCount);
-            $TargetHeatingCoolingCooling = $this->ReadPropertyInteger($TargetHeatingCoolingCoolingCount);
-            $TargetHeatingCoolingAuto = $this->ReadPropertyInteger($TargetHeatingCoolingAutoCount);
+            $VariableTargetHeatingCoolingStateID = $Device["TargetHeatingCoolingState"];
+            $TargetHeatingCoolingOff = $Device["TargetHeatingCoolingOff"];
+            $TargetHeatingCoolingHeating = $Device["TargetHeatingCoolingHeating"];
+            $TargetHeatingCoolingCooling = $Device["TargetHeatingCoolingCooling"];
+            $TargetHeatingCoolingAuto = $Device["TargetHeatingCoolingAuto"];
 
             $variable = IPS_GetVariable($VariableTargetHeatingCoolingStateID);
             $variableObject = IPS_GetObject($VariableTargetHeatingCoolingStateID);
@@ -426,14 +346,14 @@ class IPS_HomebridgeThermostat extends IPSModule {
             IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
             break;
           case 'CurrentTemperature':
-            $VariableCurrentTemperatureID = $this->ReadPropertyInteger($CurrentTemperatureCount);
+            $VariableCurrentTemperatureID = $Device["CurrentTemperature"];
             $variable = IPS_GetVariable($VariableCurrentTemperatureID);
             $variableObject = IPS_GetObject($VariableCurrentTemperatureID);
             $result = $this->ConvertVariable($variable, $value);
             IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
             break;
           case 'TargetTemperature':
-            $VariableTargetTemperatureID = $this->ReadPropertyInteger($TargetTemperatureCount);
+            $VariableTargetTemperatureID = $Device["TargetTemperature"];
             $variable = IPS_GetVariable($VariableCurrentTemperatureID);
             $variableObject = IPS_GetObject($VariableCurrentTemperatureID);
             $result = $this->ConvertVariable($variable, $value);
@@ -441,18 +361,10 @@ class IPS_HomebridgeThermostat extends IPSModule {
             break;
         }
       }
-
     }
-
   }
 
   private function addAccessory($DeviceName) {
-    //$array['topic'] = "add";
-    //$array['Buffer'] = utf8_encode('"name": "'.$DeviceName.'", "service": "TemperatureSensor","CurrentTemperature": {"minValue": -100, "maxValue": 100, "minStep": 0.1}}');
-
-//    $CurrentTemperature["minValue"] = -100;
-//    $CurrentTemperature["maxValue"] = 100;
-//    $CurrentTemperature["minStep"] = 0.1;
     //Payload bauen
     $payload["name"] = $DeviceName;
     $payload["service"] = "Thermostat";
@@ -462,33 +374,6 @@ class IPS_HomebridgeThermostat extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
-  }
-
-  public function removeAccessory($DeviceCount) {
-    //Payload bauen
-    $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
-    $payload["name"] = $DeviceName;
-
-    $array["topic"] ="remove";
-    $array["payload"] = $payload;
-    $data = json_encode($array);
-    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
-    $this->SendDebug('Remove',$SendData,0);
-    $this->SendDataToParent($SendData);
-    return "Gelöscht!";
-  }
-
-  public function ConvertVariable($variable, $value) {
-      switch ($variable["VariableType"]) {
-        case 0: // boolean
-          return boolval($value);
-        case 1: // integer
-          return intval($value);
-        case 2: // float
-          return floatval($value);
-        case 3: // string
-          return strval($value);
-    }
   }
 }
 ?>
