@@ -1,7 +1,7 @@
 <?
 class IPS_HomebridgeLightbulbTest extends IPSModule {
   private $Devices;
-  
+
   public function Create() {
       //Never delete this line!
       parent::Create();
@@ -174,7 +174,7 @@ class IPS_HomebridgeLightbulbTest extends IPSModule {
   public function getVar($DeviceName, $Characteristic) {
     for($count = 1; $count -1 < $this->ReadPropertyInteger("Anzahl"); $count++) {
       $Device = $this->Devices[$count];
-
+      $this->SendDebug('getVar Device Array',$Device, 0);
       //Prüfen ob der übergebene Name aus dem Socket zu einem Namen aus der Konfirgurationsform passt
       $name = $Device["DeviceName"];
       if ($DeviceName == $name) {
