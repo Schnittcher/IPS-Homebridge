@@ -1,5 +1,7 @@
 <?
 class IPS_HomebridgeLightbulbTest extends IPSModule {
+  private $Devices;
+  
   public function Create() {
       //Never delete this line!
       parent::Create();
