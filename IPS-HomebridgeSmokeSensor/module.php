@@ -126,7 +126,7 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
       $form .= '{ "type": "SelectVariable", "name": "StatusLowBattery'.$count.'", "caption": "StatusLowBattery" },';
       $form .= '{ "type": "Label", "label": "Soll eine eigene Variable geschaltet werden?" },';
       $form .= '{ "type": "CheckBox", "name": "SmokeDummyOptional'.$count.'", "caption": "Ja" },';
-      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo TSHBsmo_removeAccessory('.$this->InstanceID.','.$count.');" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBSmokeSensor_removeAccessory('.$this->InstanceID.','.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
       } else {
