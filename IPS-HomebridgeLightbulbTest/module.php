@@ -1,6 +1,6 @@
 <?
 class IPS_HomebridgeLightbulbTest extends IPSModule {
-  private $Devices;
+  private $Devices  = array();
 
   public function Create() {
       //Never delete this line!
