@@ -77,6 +77,7 @@ class IPS_HomebridgeSwitch extends HomeKitService {
           $Characteristic = "On";
           $data = $Data[0];
           $result = ($data) ? 'true' : 'false';
+          $SendDebug("MessageSink Result", $result);
           $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
         }
       }
