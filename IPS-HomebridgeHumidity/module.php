@@ -110,6 +110,7 @@ class IPS_HomebridgeHumidity extends HomeKitService {
       if ($DeviceName == $name) {
         //IPS Variable abfragen und zur Bridge schicken
         $result = GetValue($Device["VariableHumidity"]);
+        $this->SendDebug("getVar Result", $result,0);
         $result = number_format($result, 2, '.', '');
         $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
         return;
