@@ -1,6 +1,6 @@
 <?
 class IPS_HomebridgeLightbulbTest extends IPSModule {
-  private $Devices  = array();
+  private $Devices = array();
 
   public function Create() {
       //Never delete this line!
@@ -36,7 +36,20 @@ class IPS_HomebridgeLightbulbTest extends IPSModule {
       $this->SetReceiveDataFilter(".*Lightbulb.*");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
       for($count = 1; $count-1 < $anzahl; $count++) {
+        $Device["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
+        $Device["VariableState"] = $this->ReadPropertyInteger("VariableState{$count}");
+        $Device["VariableStateTrue"] = $this->ReadPropertyInteger("VariableStateTrue{$count}");
+        $Device["VariableStateFalse"] =  $this->ReadPropertyInteger("VariableStateTrue{$count}");
 
+        $Device["VariableBrightness"] = $this->ReadPropertyInteger("VariableBrightness{$count}");
+        $Device["VariableBrightnessMax"] = $this->ReadPropertyInteger("VariableBrightnessMax{$count}");
+        $Device["VariableBrightnessOptional"] = $this->ReadPropertyBoolean("VariableBrightnessOptional{$count}");
+
+        array_push($this->Devices, $Device):
+        $this->SendDebug('ApplyChanges',$this->Devices, 0);
+
+
+/**
         $this->Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
         $this->Devices[$count]["VariableState"] = $this->ReadPropertyInteger("VariableState{$count}");
         $this->Devices[$count]["VariableStateTrue"] = $this->ReadPropertyInteger("VariableStateTrue{$count}");
@@ -45,7 +58,7 @@ class IPS_HomebridgeLightbulbTest extends IPSModule {
         $this->Devices[$count]["VariableBrightness"] = $this->ReadPropertyInteger("VariableBrightness{$count}");
         $this->Devices[$count]["VariableBrightnessMax"] = $this->ReadPropertyInteger("VariableBrightnessMax{$count}");
         $this->Devices[$count]["VariableBrightnessOptional"] = $this->ReadPropertyBoolean("VariableBrightnessOptional{$count}");
-
+**/
         $BufferNameState = $this->Devices[$count]["DeviceName"]." State";
         $BufferNameBrightness = $this->Devices[$count]["DeviceName"]." Brightness";
 
