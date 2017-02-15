@@ -152,17 +152,17 @@ class IPS_HomebridgeSmokeSensor extends IPSModule {
          switch ($Characteristic) {
           case 'StatusLowBattery':
             //abfragen
-            $result = GetValue($Device["VariableStatusLowBattery"]:);
+            $result = GetValue($Device["VariableStatusLowBattery"]);
             $result = ($result) ? '1' : '0';
             break;
           case 'StatusTampered':
             // abfragen
-            $result = GetValue($Device["VariableStatusTampered"]:);
+            $result = GetValue($Device["VariableStatusTampered"]);
             $result = ($result) ? '1' : '0';
             break;
           case 'SmokeDetected':
             // abfragen
-            $result = GetValue($Device["VariableSmokeDetected"]:);
+            $result = GetValue($Device["VariableSmokeDetected"]);
             $result = ($result) ? '1' : '0';
             break;
 
