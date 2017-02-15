@@ -58,10 +58,10 @@ class IPS_HomebridgeThermostat extends HomeKitService {
 
       for($count = 1; $count-1 < $anzahl; $count++) {
         $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
-        $Devices[$count]["CurrentHeatingCoolingState"] = $this->ReadPropertyInteger("DeviceName{$count}");
-        $Devices[$count]["TargetHeatingCoolingState"] = $this->ReadPropertyInteger("DeviceName{$count}");
-        $Devices[$count]["CurrentTemperature"] = $this->ReadPropertyInteger("DeviceName{$count}");
-        $Devices[$count]["TargetTemperature"] = $this->ReadPropertyInteger("DeviceName{$count}");
+        $Devices[$count]["CurrentHeatingCoolingState"] = $this->ReadPropertyInteger("CurrentHeatingCoolingState{$count}");
+        $Devices[$count]["TargetHeatingCoolingState"] = $this->ReadPropertyInteger("TargetHeatingCoolingState{$count}");
+        $Devices[$count]["CurrentTemperature"] = $this->ReadPropertyInteger("CurrentTemperature{$count}");
+        $Devices[$count]["TargetTemperature"] = $this->ReadPropertyInteger("TargetTemperature{$count}");
 
         $Devices[$count]["CurrentHeatingCoolingOff"] = $this->ReadPropertyInteger("CurrentHeatingCoolingOff{$count}");
         $Devices[$count]["CurrentHeatingCoolingHeating"] = $this->ReadPropertyInteger("CurrentHeatingCoolingHeating{$count}");
