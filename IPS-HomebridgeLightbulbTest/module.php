@@ -59,8 +59,8 @@ class IPS_HomebridgeLightbulbTest extends HomeKitService {
         if ($Devices[$count]["DeviceName"] != "") {
           //Regestriere State Variable auf Veränderungen
           $RegisterBufferIDs = [];
-          array_push($RegisterBufferIDs,$this->$Devices[$count]["VariableState"]);
-          array_push($RegisterBufferIDs,$this->$Devices[$count]["VariableBrightness"]);
+          array_push($RegisterBufferIDs,$Devices[$count]["VariableState"]);
+          array_push($RegisterBufferIDs,$Devices[$count]["VariableBrightness"]);
           $this->RegisterMessages($RegisterBufferIDs, 10603);
 
           //Buffer mit den aktuellen Variablen IDs befüllen für State und Brightness
