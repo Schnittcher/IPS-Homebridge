@@ -1,5 +1,8 @@
 <?
-class IPS_HomebridgeLightbulb extends IPSModule {
+require_once(__DIR__ . "/../HomeKitService.php");
+
+class IPS_HomebridgeLightbulb extends HomeKitService {
+
   public function Create() {
       //Never delete this line!
       parent::Create();
@@ -33,99 +36,80 @@ class IPS_HomebridgeLightbulb extends IPSModule {
       //Setze Filter für ReceiveData
       $this->SetReceiveDataFilter(".*Lightbulb.*");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
+      $Devices = [];
       for($count = 1; $count-1 < $anzahl; $count++) {
+        $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
+        $Devices[$count]["VariableState"] = $this->ReadPropertyInteger("VariableState{$count}");
+        $Devices[$count]["VariableStateTrue"] = $this->ReadPropertyInteger("VariableStateTrue{$count}");
+        $Devices[$count]["VariableStateFalse"] =  $this->ReadPropertyInteger("VariableStateFalse{$count}");
 
-        $DeviceNameCount = "DeviceName{$count}";
-        $VariableStateCount = "VariableState{$count}";
-        $VariableBrightnessCount = "VariableBrightness{$count}";
-        $VariableBrightnessOptionalCount = "VariableBrightnessOptional{$count}";
+        $Devices[$count]["VariableBrightness"] = $this->ReadPropertyInteger("VariableBrightness{$count}");
+        $Devices[$count]["VariableBrightnessMax"] = $this->ReadPropertyInteger("VariableBrightnessMax{$count}");
+        $Devices[$count]["VariableBrightnessOptional"] = $this->ReadPropertyBoolean("VariableBrightnessOptional{$count}");
 
-        $BufferNameState = $DeviceNameCount." State ".$VariableStateCount;
-        $BufferNameBrightness = $DeviceNameCount." Brightness ".$VariableBrightnessCount;
+        $BufferNameState = $Devices[$count]["DeviceName"]." State";
+        $BufferNameBrightness = $Devices[$count]["DeviceName"]." Brightness";
 
-        $VariableIDStateBuffer = $this->GetBuffer($BufferNameState);
-        $VariableIDBrightnessBuffer = $this->GetBuffer($BufferNameBrightness);
+        //Alte Registrierungen auf Variablen Veränderung aufheben
+        $UnregisterBufferIDs = [];
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameState));
+        array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameBrightness));
+        $this->UnregisterMessages($UnregisterBufferIDs, 10603);
 
-        //Alte Registrierung auf Variablen Veränderung aufheben
-        if (is_int($VariableIDStateBuffer)) {
-          $this->UnregisterMessage(intval($VariableIDStateBuffer), 10603);
-        }
-        if (is_int($VariableIDBrightnessBuffer)) {
-          $this->UnregisterMessage(intval($VariableIDBrightnessBuffer), 10603);
-        }
-
-        if ($this->ReadPropertyString($DeviceNameCount) != "") {
-          $BrightnessBoolean = $this->ReadPropertyBoolean($VariableBrightnessOptionalCount);
-
+        if ($Devices[$count]["DeviceName"] != "") {
           //Regestriere State Variable auf Veränderungen
-          $NewVariableIDStateBuffer = $this->ReadPropertyInteger($VariableStateCount);
-          $this->RegisterMessage($NewVariableIDStateBuffer, 10603);
-
-          //Regestriere Brightness Variable auf Veränderungen
-          $NewVariableIDBrightnessBuffer = $this->ReadPropertyInteger($VariableBrightnessCount);
-          $this->RegisterMessage($NewVariableIDBrightnessBuffer, 10603);
+          $RegisterBufferIDs = [];
+          array_push($RegisterBufferIDs,$Devices[$count]["VariableState"]);
+          array_push($RegisterBufferIDs,$Devices[$count]["VariableBrightness"]);
+          $this->RegisterMessages($RegisterBufferIDs, 10603);
 
           //Buffer mit den aktuellen Variablen IDs befüllen für State und Brightness
-          $this->SetBuffer($BufferNameState,$this->ReadPropertyInteger($VariableStateCount));
-          $this->SetBuffer($BufferNameBrightness,$this->ReadPropertyInteger($VariableBrightnessCount));
+          $this->SetBuffer($BufferNameState,$Devices[$count]["VariableState"]);
+          $this->SetBuffer($BufferNameBrightness,$Devices[$count]["VariableBrightness"]);
 
-          $this->addAccessory($this->ReadPropertyString($DeviceNameCount),$BrightnessBoolean);
+          $this->addAccessory($Devices[$count]["DeviceName"],$Devices[$count]["VariableBrightnessOptional"]);
         } else {
           return;
         }
       }
-
+      $DevicesConfig = serialize($Devices);
+      $this->SetBuffer("Lightbulb Config",$DevicesConfig);
     }
 
   public function Destroy() {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
+    $Devices = unserialize($this->getBuffer("Lightbulb Config"));
     if ($Data[1] == true) {
       $anzahl = $this->ReadPropertyInteger("Anzahl");
-
       for($count = 1; $count-1 < $anzahl; $count++) {
+        $Device = $Devices[$count];
 
-        $VariableStateCount = $this->ReadPropertyInteger("VariableState{$count}");
-        $VariableBrightnessCount = $this->ReadPropertyInteger("VariableBrightness{$count}");
-        $DeviceName = $this->ReadPropertyString("DeviceName{$count}");
-
-        $VariableStateTrueCount = "VariableStateTrue{$count}";
-        $VariableStateFalseCount = "VariableStateFalse{$count}";
-
-        $VariableBrightnessMaxCount = "VariableBrightnessMax{$count}";
-
+        $DeviceName = $Device["DeviceName"];
         //Prüfen ob die SenderID gleich der State oder Brightness Variable ist, dann den aktuellen Wert an die Bridge senden
         switch ($SenderID) {
-          case $VariableStateCount:
+          //IPS Variable für die Bridge umwandeln
+          case $Device["VariableState"]:
             $Characteristic = "On";
             $data = $Data[0];
-
-            $VariableStateTrue = $this->ReadPropertyInteger($VariableStateTrueCount);
-            $VariableStateFalse = $this->ReadPropertyInteger($VariableStateFalseCount);
             switch ($data) {
-              case $VariableStateTrue:
+              case $Device["VariableStateTrue"]:
                 $result = 'true';
                 break;
-              case $VariableStateFalse:
+              case $Device["VariableStateFalse"]:
                 $result = 'false';
                 break;
             }
-            $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-            $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-            $Data = json_encode($JSON);
-            $this->SendDataToParent($Data);
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
-          case $VariableBrightnessCount:
+          case $Device["VariableBrightness"]:
             $Characteristic = "Brightness";
             $data = $Data[0];
-            $VariableBrightnessMax = $this->ReadPropertyInteger($VariableBrightnessMaxCount);
+            $VariableBrightnessMax = $Device["VariableBrightnessMax"];
             //Umrechnung
             $result = ($data / $VariableBrightnessMax) * 100;
-            $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-            $JSON['Buffer'] = utf8_encode('{"topic": "setValue", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-            $Data = json_encode($JSON);
-            $this->SendDataToParent($Data);
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
           }
         }
@@ -160,132 +144,78 @@ class IPS_HomebridgeLightbulb extends IPSModule {
     return $form;
   }
 
-  public function ReceiveData($JSONString) {
-    $this->SendDebug('ReceiveData',$JSONString, 0);
-    $data = json_decode($JSONString);
-    // Buffer decodieren und in eine Variable schreiben
-    $Buffer = utf8_decode($data->Buffer);
-    // Und Diese dann wieder dekodieren
-    $HomebridgeData = json_decode($Buffer);
-
-    //Prüfen ob die ankommenden Daten für den Lightbulb sind wenn ja, Status abfragen
-    if ($HomebridgeData->Action == "get" && $HomebridgeData->Service == "Lightbulb") {
-      $this->getVar($HomebridgeData->Device, $HomebridgeData->Characteristic);
-    }
-    //Prüfen ob die ankommenden Daten für den Lightbulb sind wenn ja, Status setzen
-    if ($HomebridgeData->Action == "set" && $HomebridgeData->Service == "Lightbulb") {
-      $this->setVar($HomebridgeData->Device, $HomebridgeData->Value, $HomebridgeData->Characteristic);
-    }
-  }
-
   public function getVar($DeviceName, $Characteristic) {
-    for($count = 1; $count -1 < $this->ReadPropertyInteger("Anzahl"); $count++) {
-
-      //Hochzählen der Konfirgurationsform Variablen
-      $VariableStateCount = "VariableState{$count}";
-      $VariableBrightnessCount = "VariableBrightness{$count}";
-
-      $VariableStateTrueCount = "VariableStateTrue{$count}";
-      $VariableStateFalseCount = "VariableStateFalse{$count}";
-
-      $VariableBrightnessMaxCount = "VariableBrightnessMax{$count}";
-
+    $Devices = unserialize($this->getBuffer("Lightbulb Config"));
+    $anzahl = $this->ReadPropertyInteger("Anzahl");
+    for($count = 1; $count -1 < $anzahl; $count++) {
+      $Device = $Devices[$count];
       //Prüfen ob der übergebene Name aus dem Socket zu einem Namen aus der Konfirgurationsform passt
-      $name = $this->ReadPropertyString("DeviceName{$count}");
+      $name = $Device["DeviceName"];
       if ($DeviceName == $name) {
         //IPS Variable abfragen
         switch ($Characteristic) {
           case 'On':
             //Lightbulb State abfragen
-            $VariableStateTrue = $this->ReadPropertyInteger($VariableStateTrueCount);
-            $VariableStateFalse = $this->ReadPropertyInteger($VariableStateFalseCount);
-            $VariableStateID = $this->ReadPropertyInteger($VariableStateCount);
-            $result = intval(GetValue($VariableStateID));
+            $result = intval(GetValue($Device["VariableState"]));
+            //IPS Variable für die Bridge umwandeln
             switch ($result) {
-              case $VariableStateTrue:
+              case $Device["VariableStateTrue"]:
                 $result = 'true';
                 break;
-              case $VariableStateFalse:
+              case $Device["VariableStateFalse"]:
                 $result = 'false';
                 break;
             }
-            //$result = ($result) ? 'true' : 'false';
             break;
           case 'Brightness':
             //Lightbulb Brightness abfragen
-            $VariableBrightnessID = $this->ReadPropertyInteger($VariableBrightnessCount);
-            $VariableBrightnessMax = $this->ReadPropertyInteger($VariableBrightnessMaxCount);
-            $result = GetValue($VariableBrightnessID);
-            $result = ($result / $VariableBrightnessMax) * 100;
+            $result = GetValue($Device["VariableBrightness"]);
+            $result = ($result / $Device["VariableBrightnessMax"]) * 100;
             break;
         }
         //Status an die Bridge senden
-        $JSON['DataID'] = "{018EF6B5-AB94-40C6-AA53-46943E824ACF}";
-        $JSON['Buffer'] = utf8_encode('{"topic": "callback", "Characteristic": "'.$Characteristic.'", "Device": "'.$DeviceName.'", "value": "'.$result.'"}');
-        $Data = json_encode($JSON);
-        $this->SendDataToParent($Data);
+        $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
         return;
       }
     }
   }
 
   public function setVar($DeviceName, $value, $Characteristic) {
-    for($count = 1; $count -1 < $this->ReadPropertyInteger("Anzahl"); $count++) {
-
-      //Hochzählen der Konfirgurationsform Variablen
-      $DeviceNameCount = "DeviceName{$count}";
-      $VariableStateCount = "VariableState{$count}";
-      $VariableBrightnessCount = "VariableBrightness{$count}";
-
-      $VariableStateTrueCount = "VariableStateTrue{$count}";
-      $VariableStateFalseCount = "VariableStateFalse{$count}";
-
-      $VariableBrightnessMaxCount = "VariableBrightnessMax{$count}";
+    $Devices = unserialize($this->getBuffer("Lightbulb Config"));
+    $anzahl = $this->ReadPropertyInteger("Anzahl");
+    for($count = 1; $count -1 < $anzahl; $count++) {
+      $Device = $Devices[$count];
 
       //Prüfen ob der übergebene Name aus dem Hook zu einem Namen aus der Konfirgurationsform passt
-      $name = $this->ReadPropertyString($DeviceNameCount);
+      $name = $Device["DeviceName"];
       if ($DeviceName == $name) {
         switch ($Characteristic) {
           case 'On':
             //Lightbulb State abfragen
-            $VariableStateID = $this->ReadPropertyInteger($VariableStateCount);
-            $VariableStateTrue = $this->ReadPropertyInteger($VariableStateTrueCount);
-            $VariableStateFalse = $this->ReadPropertyInteger($VariableStateFalseCount);
-            $result = intval(GetValue($VariableStateID));
-            //$result = ($result) ? 'true' : 'false';
+            $result = intval(GetValue($Device["VariableState"]));
 
-            //Result Wert in erwartete Device Variable ändern
+            //IPS Variable für die Bridge umwandeln
             switch ($result) {
-              case $VariableStateTrue:
+              case $Device["VariableStateTrue"]:
                 $result = 'true';
                 break;
-              case $VariableStateFalse:
+              case $Device["VariableStateFalse"]:
                 $result = 'false';
                 break;
             }
 
-            //Übergebnenen Wert in erwartete Device Variable ändern
-            switch ($value) {
-              case $VariableStateTrue:
-                $value = $VariableStateTrue;
-                break;
-              case $VariableStateFalse:
-                $value = $VariableStateFalse;
-                break;
-            }
-
-            if ($result == 'true' && $value == $VariableStateFalse) {
-              $variable = IPS_GetVariable($VariableStateID);
-              $variableObject = IPS_GetObject($VariableStateID);
+            if ($result == 'true' && $value == $Device["VariableStateFalse"]) {
+              $variable = IPS_GetVariable($Device["VariableState"]);
+              $variableObject = IPS_GetObject($Device["VariableState"]);
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
               $result = $this->ConvertVariable($variable, $value);
               //Geräte Variable setzen
               IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
             }
 
-            if ($result == 'false' && $value == $VariableStateTrue) {
-              $variable = IPS_GetVariable($VariableStateID);
-              $variableObject = IPS_GetObject($VariableStateID);
+            if ($result == 'false' && $value == $Device["VariableStateTrue"]) {
+              $variable = IPS_GetVariable($Device["VariableState"]);
+              $variableObject = IPS_GetObject($Device["VariableState"]);
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
               $result = $this->ConvertVariable($variable, $value);
               //Geräte Variable setzen
@@ -293,14 +223,12 @@ class IPS_HomebridgeLightbulb extends IPSModule {
             }
             break;
           case 'Brightness':
-            //Lightbulb Brightness abfragen
-            $VariableBrightnessMax = $this->ReadPropertyInteger($VariableBrightnessMaxCount);
             //Umrechnung
-            $value = ($value / 100) * $VariableBrightnessMax;
+            $value = ($value / 100) * $Device["VariableBrightnessMax"];
 
-            $VariableBrightnessID = $this->ReadPropertyInteger($VariableBrightnessCount);
-            $variable = IPS_GetVariable($VariableBrightnessID);
-            $variableObject = IPS_GetObject($VariableBrightnessID);
+            $variable = IPS_GetVariable($Device["VariableBrightness"]);
+            $variableObject = IPS_GetObject($Device["VariableBrightness"]);
+
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $value);
             //Geräte Variable setzen
@@ -325,33 +253,6 @@ class IPS_HomebridgeLightbulb extends IPSModule {
     $data = json_encode($array);
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     @$this->SendDataToParent($SendData);
-  }
-
-  public function removeAccessory($DeviceCount) {
-    //Payload bauen
-    $DeviceName = $this->ReadPropertyString("DeviceName{$DeviceCount}");
-    $payload["name"] = $DeviceName;
-
-    $array["topic"] ="remove";
-    $array["payload"] = $payload;
-    $data = json_encode($array);
-    $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
-    $this->SendDebug('Remove',$SendData,0);
-    $this->SendDataToParent($SendData);
-    return "Gelöscht!";
-  }
-
-  public function ConvertVariable($variable, $value) {
-      switch ($variable["VariableType"]) {
-        case 0: // boolean
-          return boolval($value);
-        case 1: // integer
-          return intval($value);
-        case 2: // float
-          return floatval($value);
-        case 3: // string
-          return strval($value);
-    }
   }
 }
 ?>
