@@ -214,23 +214,8 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
               $value = 0;
             }
 
-            if ($result == 'true' && $value == $Device["VariableStateFalse"]) {
-              $variable = IPS_GetVariable($Device["VariableState"]);
-              $variableObject = IPS_GetObject($Device["VariableState"]);
-              //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
-              $result = $this->ConvertVariable($variable, $value);
-              //Geräte Variable setzen
-              $this->SetValueToIPS($variable,$variableObject,$result);
-            }
 
-            if ($result == 'false' && $value == $Device["VariableStateTrue"]) {
-              $variable = IPS_GetVariable($Device["VariableState"]);
-              $variableObject = IPS_GetObject($Device["VariableState"]);
-              //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
-              $result = $this->ConvertVariable($variable, $value);
-              //Geräte Variable setzen
-              $this->SetValueToIPS($variable,$variableObject,$result);
-            }
+            $this->SetValueToIPS($variable,$variableObject,$result);
             break;
           case 'Brightness':
             //Umrechnung
