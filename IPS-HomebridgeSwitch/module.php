@@ -141,7 +141,7 @@ class IPS_HomebridgeSwitch extends HomeKitService {
         $variableObject = IPS_GetObject($VariableStateID);
         //Geräte Variable setzen
         if ($variable["VariableCustomAction"] > 0) {
-          SetValue($VariableStateID,$result)
+          SetValue($VariableStateID,$result);
         } else {
           IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
         }
