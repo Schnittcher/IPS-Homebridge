@@ -204,6 +204,10 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             $result = intval(GetValue($Device["VariableState"]));
 
             //IPS Variable für die Bridge umwandeln
+            if ($result > 0) {
+              $result = 1;
+            }
+
             switch ($result) {
               case $Device["VariableStateTrue"]:
                 $result = 'true';
