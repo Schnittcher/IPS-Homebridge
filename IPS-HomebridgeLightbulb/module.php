@@ -173,15 +173,17 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
                 $result = 'false';
                 break;
             }
+            $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
             break;
           case 'Brightness':
             //Lightbulb Brightness abfragen
             $result = GetValue($Device["VariableBrightness"]);
             $result = ($result / $Device["VariableBrightnessMax"]) * 100;
+            $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
             break;
         }
         //Status an die Bridge senden
-        $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
+
         return;
       }
     }
