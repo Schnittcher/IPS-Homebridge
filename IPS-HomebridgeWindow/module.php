@@ -11,11 +11,13 @@ class IPS_HomebridgeWindow extends HomeKitService {
       //99 Geräte können pro Konfirgurationsform angelegt werden
       for($count = 1; $count -1 < 99; $count++) {
         $DeviceName = "DeviceName{$count}";
+        $WindowID = "WindowID{$count}";
         $CurrentPosition = "CurrentPosition{$count}";
         $TargetPosition = "TargetPosition{$count}";
         $PositionState = "PositionState{$count}";
 
         $this->RegisterPropertyString($DeviceName, "");
+        $this->RegisterPropertyInteger($WindowID, 0);
         $this->RegisterPropertyInteger($CurrentPosition, 0);
         $this->RegisterPropertyInteger($TargetPosition, 0);
         $this->RegisterPropertyInteger($PositionState, 0);
