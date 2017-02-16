@@ -219,7 +219,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             }
             if ($result == 'true' && intval($value) == $Device["VariableStateFalse"]) {
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
-              $result = $this->ConvertVariable($variable, $value);
+              $result = $this->ConvertVariable($variable, intval($value));
                 $this->SendDebug("setVar",$result,0);
               //Geräte Variable setzen
               $this->SetValueToIPS($variable,$variableObject,$result);
@@ -228,7 +228,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             $this->SendDebug("setVar value",intval($value),0);
             if ($result == 'false' && intval($value) == $Device["VariableStateTrue"]) {
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
-              $result = $this->ConvertVariable($variable, $value);
+              $result = $this->ConvertVariable($variable, intval($value));
               //Geräte Variable setzen
               $this->SetValueToIPS($variable,$variableObject,$result);
             }
