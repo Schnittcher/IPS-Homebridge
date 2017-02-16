@@ -140,7 +140,7 @@ class IPS_HomebridgeSwitch extends HomeKitService {
         //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
         $result = $this->ConvertVariable($variable, $state);
         //Geräte Variable setzen
-        $this->SetValueToIPS($variable,$variableObject,$result)
+        $this->SetValueToIPS($variable,$variableObject,$result);
       }
     }
   }
