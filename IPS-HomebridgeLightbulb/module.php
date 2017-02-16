@@ -214,7 +214,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
               $value = 0;
             }
 
-
+            $result = $this->ConvertVariable($variable, $value);
             $this->SetValueToIPS($variable,$variableObject,$result);
             break;
           case 'Brightness':
