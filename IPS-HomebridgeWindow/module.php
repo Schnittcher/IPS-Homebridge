@@ -16,7 +16,6 @@ class IPS_HomebridgeWindow extends HomeKitService {
         $PositionState = "PositionState{$count}";
 
         $this->RegisterPropertyString($DeviceName, "");
-        $this->RegisterPropertyInteger($WindowID, 0);
         $this->RegisterPropertyInteger($CurrentPosition, 0);
         $this->RegisterPropertyInteger($TargetPosition, 0);
         $this->RegisterPropertyInteger($PositionState, 0);
