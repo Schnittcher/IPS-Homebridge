@@ -210,8 +210,8 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
                 break;
             }
             $this->SendDebug("setVar",$value,0);
-            if ($value > 0) {
-              $value = 1;
+            if ($value = false) {
+              $value = 0;
             }
 
             if ($result == 'true' && $value == $Device["VariableStateFalse"]) {
