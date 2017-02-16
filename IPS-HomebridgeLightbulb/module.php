@@ -89,6 +89,8 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
         $DeviceName = $Device["DeviceName"];
         if ($Data[0] > 0) {
           $state = 1;
+        } else {
+          $state = 0;
         }
         //Prüfen ob die SenderID gleich der State oder Brightness Variable ist, dann den aktuellen Wert an die Bridge senden
         switch ($SenderID) {
