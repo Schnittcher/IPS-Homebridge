@@ -74,7 +74,7 @@ class HomeKitService extends IPSModule {
     if ($variable["VariableAction"] > 0) {
       IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
     } else {
-      SetValue($VariableStateID,$result);
+      SetValue($variable["VariableID"],$result);
     }
   }
 }

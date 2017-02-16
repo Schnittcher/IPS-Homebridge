@@ -88,6 +88,7 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
       for($count = 1; $count-1 < $anzahl; $count++) {
         $Device = $Devices[$count];
 
+        $DeviceName = $Device["DeviceName"];
         $data = $Data[0];
         //Prüfen ob die SenderID gleich der Variable ist, dann den aktuellen Wert an die Bridge senden
         switch ($SenderID) {
