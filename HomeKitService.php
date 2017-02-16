@@ -69,5 +69,13 @@ class HomeKitService extends IPSModule {
     $SendData = json_encode(Array("DataID" => "{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "Buffer" => $data));
     $this->SendDataToParent($SendData);
   }
+
+  protected function SetValueToIPS($variable,$variableObject,$result) {
+    if ($variable["VariableAction"] > 0) {
+      IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+    } else {
+      SetValue($variable["VariableID"],$result);
+    }
+  }
 }
 ?>

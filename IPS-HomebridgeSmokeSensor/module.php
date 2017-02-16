@@ -88,6 +88,7 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
       for($count = 1; $count-1 < $anzahl; $count++) {
         $Device = $Devices[$count];
 
+        $DeviceName = $Device["DeviceName"];
         $data = $Data[0];
         //Prüfen ob die SenderID gleich der Variable ist, dann den aktuellen Wert an die Bridge senden
         switch ($SenderID) {
@@ -172,63 +173,6 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
         }
         $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
         return;
-      }
-    }
-  }
-
-  public function setVar($DeviceName, $value, $Characteristic) {
-    $Devices = unserialize($this->getBuffer("SmokeSensor Config"));
-    $anzahl = $this->ReadPropertyInteger("Anzahl");
-
-    for($count = 1; $count -1 < $anzahl; $count++) {
-      $Device = $Devices[$count];
-
-      //Prüfen ob der übergebene Name zu einem Namen aus der Konfirgurationsform passt
-      $name = $Device["DeviceName"];
-      $DummyOptionalValue = $Device["SmokeDummyOptional"];
-      if ($DeviceName == $name) {
-        switch ($Characteristic) {
-          case 'StatusLowBattery':
-            //Battery Status abfragen
-            $VariableID = $Device["VariableStatusLowBattery"];
-            $variable = IPS_GetVariable($VariableID);
-            $variableObject = IPS_GetObject($VariableID);
-            $result = $this->ConvertVariable($variable, $value);
-            if ($DummyOptionalValue == true) {
-              SetValue($VariableID, $result);
-            } else {
-              IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
-            }
-            break;
-          case 'StatusTampered':
-            //Manipulations Status Abfragen
-            $VariableID = $Device["VariableStatusTampered"];
-            $variable = IPS_GetVariable($VariableID);
-            $variableObject = IPS_GetObject($VariableID);
-            //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
-            $result = $this->ConvertVariable($variable, $value);
-            //Geräte Variable setzen
-            if ($DummyOptionalValue == true) {
-              SetValue($VariableID, $result);
-            } else {
-              IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
-            }
-            break;
-          case 'SmokeDetected':
-            //Raucherkennung abfragen
-            $VariableID = $Device["VariableSmokeDetected"];
-            $variable = IPS_GetVariable($VariableID);
-            $variableObject = IPS_GetObject($VariableID);
-            //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
-            $result = $this->ConvertVariable($variable, $value);
-            //Geräte Variable setzen
-            if ($DummyOptionalValue == true) {
-               SetValue($VariableID, $result);
-            } else {
-              IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
-            }
-            break;
-        }
       }
     }
   }

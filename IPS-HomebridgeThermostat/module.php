@@ -316,7 +316,7 @@ class IPS_HomebridgeThermostat extends HomeKitService {
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $result);
             //Geräte Variable setzen
-            IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+            $this->SetValueToIPS($variable,$variableObject,$result);
             break;
           case 'TargetHeatingCoolingState':
             $VariableTargetHeatingCoolingStateID = $Device["TargetHeatingCoolingState"];
@@ -345,21 +345,21 @@ class IPS_HomebridgeThermostat extends HomeKitService {
             }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $result);
-            IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+            $this->SetValueToIPS($variable,$variableObject,$result);
             break;
           case 'CurrentTemperature':
             $VariableCurrentTemperatureID = $Device["CurrentTemperature"];
             $variable = IPS_GetVariable($VariableCurrentTemperatureID);
             $variableObject = IPS_GetObject($VariableCurrentTemperatureID);
             $result = $this->ConvertVariable($variable, $value);
-            IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+            $this->SetValueToIPS($variable,$variableObject,$result);
             break;
           case 'TargetTemperature':
             $VariableTargetTemperatureID = $Device["TargetTemperature"];
             $variable = IPS_GetVariable($VariableCurrentTemperatureID);
             $variableObject = IPS_GetObject($VariableCurrentTemperatureID);
             $result = $this->ConvertVariable($variable, $value);
-            IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+            $this->SetValueToIPS($variable,$variableObject,$result);
             break;
         }
       }
