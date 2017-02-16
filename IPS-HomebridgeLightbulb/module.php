@@ -160,7 +160,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
         switch ($Characteristic) {
           case 'On':
             //Lightbulb State abfragen
-            $result = intval(GetValue($Device["VariableState"]));
+            $result = floatval(GetValue($Device["VariableState"]));
             if ($result > 0) {
               $result = 1;
             }
@@ -200,14 +200,15 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
       if ($DeviceName == $name) {
         switch ($Characteristic) {
           case 'On':
+            $variable = IPS_GetVariable($Device["VariableState"]);
+            $variableObject = IPS_GetObject($Device["VariableState"]);
             //Lightbulb State abfragen
-            $result = GetValue($Device["VariableState"]);
+            $result = floatval(GetValue($Device["VariableState"]));
 
-            //IPS Variable für die Bridge umwandeln
             if ($result > 0) {
               $result = 1;
             }
-
+            //IPS Variable für die Bridge umwandeln
             switch ($result) {
               case $Device["VariableStateTrue"]:
                 $result = 'true';
@@ -216,15 +217,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
                 $result = 'false';
                 break;
             }
-
-
-            if (intval($value) == 0) {
-              $value = 0;
-            }
-
             if ($result == 'true' && $value == $Device["VariableStateFalse"]) {
-              $variable = IPS_GetVariable($Device["VariableState"]);
-              $variableObject = IPS_GetObject($Device["VariableState"]);
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
               $result = $this->ConvertVariable($variable, $value);
                 $this->SendDebug("setVar",$result,0);
@@ -233,11 +226,8 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             }
 
             if ($result == 'false' && $value == $Device["VariableStateTrue"]) {
-              $variable = IPS_GetVariable($Device["VariableState"]);
-              $variableObject = IPS_GetObject($Device["VariableState"]);
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
               $result = $this->ConvertVariable($variable, $value);
-
               //Geräte Variable setzen
               $this->SetValueToIPS($variable,$variableObject,$result);
             }
