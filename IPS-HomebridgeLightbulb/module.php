@@ -210,7 +210,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
               $result = $this->ConvertVariable($variable, $value);
               //Geräte Variable setzen
-              IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+              $this->SetValueToIPS($variable,$variableObject,$result)
             }
 
             if ($result == 'false' && $value == $Device["VariableStateTrue"]) {
@@ -219,7 +219,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
               $result = $this->ConvertVariable($variable, $value);
               //Geräte Variable setzen
-              IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+              $this->SetValueToIPS($variable,$variableObject,$result)
             }
             break;
           case 'Brightness':
@@ -228,11 +228,10 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
 
             $variable = IPS_GetVariable($Device["VariableBrightness"]);
             $variableObject = IPS_GetObject($Device["VariableBrightness"]);
-
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $value);
             //Geräte Variable setzen
-            IPS_RequestAction($variableObject["ParentID"], $variableObject['ObjectIdent'], $result);
+            $this->SetValueToIPS($variable,$variableObject,$result)
             break;
         }
       }
