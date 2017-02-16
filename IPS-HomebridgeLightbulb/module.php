@@ -87,6 +87,9 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
         $Device = $Devices[$count];
 
         $DeviceName = $Device["DeviceName"];
+        if ($data > $Device["VariableBrightnessMax"]) {
+          $state = 1;
+        }
         //Prüfen ob die SenderID gleich der State oder Brightness Variable ist, dann den aktuellen Wert an die Bridge senden
         switch ($SenderID) {
           //IPS Variable für die Bridge umwandeln
@@ -94,15 +97,15 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             $Characteristic = "On";
             $data = $Data[0];
             $this->SendDebug("data",$data,0);
-            switch ($data) {
+            switch ($state) {
               case $Device["VariableStateTrue"]:
-                $result = 'true';
+                $state = 'true';
                 break;
               case $Device["VariableStateFalse"]:
-                $result = 'false';
+                $state = 'false';
                 break;
             }
-            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $state);
             break;
           case $Device["VariableBrightness"]:
             $Characteristic = "Brightness";
