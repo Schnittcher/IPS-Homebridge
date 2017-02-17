@@ -75,37 +75,36 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
       for($count = 1; $count-1 < $anzahl; $count++) {
         $Device = $Devices[$count];
         $DeviceName = $Device["DeviceName"];
+
         //Prüfen ob die SenderID gleich der State oder Brightness Variable ist, dann den aktuellen Wert an die Bridge senden
-        switch ($SenderID) {
-          //IPS Variable für die Bridge umwandeln
-          case $Device["VariableState"]:
-            $Characteristic = "On";
-            $data = $Data[0];
-      			if ($data > 0) {
-      				$data = 1;
-      			}
-            switch ($data) {
-              case $Device["VariableStateTrue"]:
-                $result = 'true';
-                break;
-              case $Device["VariableStateFalse"]:
-                $result = 'false';
-                break;
-            }
-            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
-            break;
-          case $Device["VariableBrightness"]:
-            $Characteristic = "Brightness";
-            $data = $Data[0];
-            $VariableBrightnessMax = $Device["VariableBrightnessMax"];
-            //Umrechnung
-            $result = ($data / $VariableBrightnessMax) * 100;
-            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
-            break;
+        if ($SenderID == $Device["VariableState"]) {
+          $Characteristic = "On";
+          $data = $Data[0];
+          if ($data > 0) {
+            $data = 1;
           }
+          switch ($data) {
+            case $Device["VariableStateTrue"]:
+              $result = 'true';
+              break;
+            case $Device["VariableStateFalse"]:
+              $result = 'false';
+              break;
+          }
+          $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
+        }
+        if ($SenderID == $Device["Brightness"]) {
+          $Characteristic = "Brightness";
+          $data = $Data[0];
+          $VariableBrightnessMax = $Device["VariableBrightnessMax"];
+          //Umrechnung
+          $result = ($data / $VariableBrightnessMax) * 100;
+          $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
         }
       }
     }
+  }
+  
   public function GetConfigurationForm() {
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     $form = '{"elements":
