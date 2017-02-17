@@ -144,7 +144,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             //Lightbulb State abfragen
             $result = floatval(GetValue($Device["VariableState"]));
             if ($result > 0) {
-              $result = 1;
+              $result = $Device["VariableStateTrue"];
             }
             //IPS Variable für die Bridge umwandeln
             switch ($result) {
@@ -182,7 +182,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             $result = floatval(GetValue($Device["VariableState"]));
             //IPS Variable für die Bridge umwandeln
 			if ($result > 0) {
-				$result = 1;
+				$result = $Device["VariableStateTrue"];
 			}
             switch ($result) {
               case $Device["VariableStateTrue"]:
