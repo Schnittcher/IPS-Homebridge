@@ -99,6 +99,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
           $VariableBrightnessMax = $Device["VariableBrightnessMax"];
           //Umrechnung
           $result = ($data / $VariableBrightnessMax) * 100;
+          $result intval($result);
           $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
         }
       }
