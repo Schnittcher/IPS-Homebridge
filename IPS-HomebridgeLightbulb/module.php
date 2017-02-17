@@ -93,7 +93,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
           }
           $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
         }
-        if ($SenderID == $Device["Brightness"]) {
+        if ($SenderID == $Device["VariableBrightness"]) {
           $Characteristic = "Brightness";
           $data = $Data[0];
           $VariableBrightnessMax = $Device["VariableBrightnessMax"];
@@ -104,7 +104,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
       }
     }
   }
-  
+
   public function GetConfigurationForm() {
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     $form = '{"elements":
