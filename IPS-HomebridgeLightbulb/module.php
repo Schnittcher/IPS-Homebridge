@@ -184,11 +184,6 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
 			if ($result > 0) {
 				$result = $Device["VariableStateTrue"];
 			}
-      if (boolval($value) == true) {
-				$value = $Device["VariableStateTrue"];
-			} else {
-      $value = $Device["VariableStateFalse"];
-    	}
             switch ($result) {
               case $Device["VariableStateTrue"]:
                 $result = $Device["VariableStateTrue"];
@@ -200,6 +195,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             if ($result == 'true' && $value == $Device["VariableStateFalse"]) {
               $variable = IPS_GetVariable($Device["VariableState"]);
               $variableObject = IPS_GetObject($Device["VariableState"]);
+              $value = $Device["VariableStateFalse"];
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
               $result = $this->ConvertVariable($variable, $value);
               //Geräte Variable setzen
@@ -208,6 +204,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             if ($result == 'false' && $value == $Device["VariableStateTrue"]) {
               $variable = IPS_GetVariable($Device["VariableState"]);
               $variableObject = IPS_GetObject($Device["VariableState"]);
+              $value = $Device["VariableStateTrue"];
               //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
               $result = $this->ConvertVariable($variable, $value);
               //Geräte Variable setzen
