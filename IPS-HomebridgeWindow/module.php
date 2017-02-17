@@ -155,9 +155,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
       $form .= '{ "type": "SelectVariable", "name": "PositionStateIncreasing'.$count.'", "caption": "Increasing Value " },';
       $form .= '{ "type": "SelectVariable", "name": "PositionStateStopped'.$count.'", "caption": "Stopped Value " },';
       $form .= '{ "type": "SelectVariable", "name": "TargetPosition'.$count.'", "caption": "Target " },';
-      $form .= '{ "type": "SelectVariable", "name": "TargetPositionMax'.$count.'", "caption": "MaxValue " },';
+      $form .= '{ "type": "ValidationTextBox", "name": "TargetPositionMax'.$count.'", "caption": "MaxValue " },';
       $form .= '{ "type": "SelectVariable", "name": "CurrentPosition'.$count.'", "caption": "Current" },';
-      $form .= '{ "type": "SelectVariable", "name": "CurrentPositionMax'.$count.'", "caption": "MaxValue " },';
+      $form .= '{ "type": "ValidationTextBox", "name": "CurrentPositionMax'.$count.'", "caption": "MaxValue " },';
       $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBWindow_removeAccessory('.$this->InstanceID.','.$count.');" },';
 
       if ($count == $anzahl) {
