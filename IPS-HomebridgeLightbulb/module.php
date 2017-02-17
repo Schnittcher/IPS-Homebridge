@@ -93,6 +93,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
                 break;
             }
             $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
+            break;
           case $Device["VariableBrightness"]:
             $Characteristic = "Brightness";
             $data = $Data[0];
