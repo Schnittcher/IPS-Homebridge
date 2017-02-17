@@ -160,6 +160,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
             //Lightbulb Brightness abfragen
             $result = GetValue($Device["VariableBrightness"]);
             $result = ($result / $Device["VariableBrightnessMax"]) * 100;
+            $result = intval($result);
             break;
         }
         //Status an die Bridge senden
