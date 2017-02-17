@@ -15,12 +15,22 @@ class IPS_HomebridgeWindow extends HomeKitService {
         $CurrentPosition = "CurrentPosition{$count}";
         $TargetPosition = "TargetPosition{$count}";
         $PositionState = "PositionState{$count}";
+        $VariableCurrenPositionMax = "CurrentPositionMax{$count}";
+        $VariableTargetPositionMax = "TargetPositionMax{$count}";
+        $PositionStateDecreasing = "PositionStateDecreasing{$count}";
+        $PositionStateIncreasing = "PositionStateIncreasing{$count}";
+        $PositionStateStopped = "PositionStateStopped{$count}";
 
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($WindowID, 0);
         $this->RegisterPropertyInteger($CurrentPosition, 0);
         $this->RegisterPropertyInteger($TargetPosition, 0);
         $this->RegisterPropertyInteger($PositionState, 0);
+        $this->RegisterPropertyInteger($VariableCurrenPositionMax, 0);
+        $this->RegisterPropertyInteger($VariableTargetPositionMax, 0);
+        $this->RegisterPropertyInteger($PositionStateDecreasing, 0);
+        $this->RegisterPropertyInteger($PositionStateIncreasing, 0);
+        $this->RegisterPropertyInteger($PositionStateStopped, 0);
       }
   }
   public function ApplyChanges() {
@@ -31,14 +41,20 @@ class IPS_HomebridgeWindow extends HomeKitService {
 
       for($count = 1; $count-1 < $anzahl; $count++) {
         $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
-        $Devices[$count]["PositionState"] = $this->ReadPropertyString("PositionState{$count}");
-        $Devices[$count]["TargetPosition"] = $this->ReadPropertyString("TargetPosition{$count}");
-        $Devices[$count]["CurrentPosition"] = $this->ReadPropertyString("CurrentPosition{$count}");
+        $Devices[$count]["PositionState"] = $this->ReadPropertyInteger("PositionState{$count}");
+        $Devices[$count]["TargetPosition"] = $this->ReadPropertyInteger("TargetPosition{$count}");
+        $Devices[$count]["CurrentPosition"] = $this->ReadPropertyInteger("CurrentPosition{$count}");
+
+        $Devices[$count]["CurrenPositionMax"] = $this->ReadPropertInteger("CurrentPositionMax{$count}");
+        $Devices[$count]["TargetPositionMax"] = $this->ReadPropertyInteger("TargetPositionMax{$count}");
+
+        $Devices[$count]["PositionStateDecreasing"] = $this->ReadPropertyInteger("PositionStateDecreasing{$count}");
+        $Devices[$count]["PositionStateIncreasing"] = $this->ReadPropertyInteger("PositionStateIncreasing{$count}");
+        $Devices[$count]["PositionStateStopped"] = $this->ReadPropertyInteger("PositionStateStopped{$count}");
 
         $BufferNameState = $Devices[$count]["DeviceName"]. " PositionState";
         $BufferNameTarget = $Devices[$count]["DeviceName"]. " TargetPosition";
-        $BufferNameCurrent = $Devices[$count]["DeviceName"]. " CurrentPosition";
-
+        $BufferNameCurrent = $Devices[$count]["DeviceName"]. " CurrenttPosition";
         //Alte Registrierungen auf Variablen Veränderung aufheben
         $UnregisterBufferIDs = [];
         array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameState));
@@ -84,24 +100,46 @@ class IPS_HomebridgeWindow extends HomeKitService {
       //Prüfen ob die SenderID gleich der State Variable ist, dann den aktuellen Wert an die Bridge senden
       switch ($SenderID) {
        case $Device["PositionState"]:
+        $result = $data;
+        switch ($result) {
+         case $Device["PositionStateDecreasing"]:
+           $result = 0;
+           break;
+         case $Device["PositionStateIncreasing"]:
+           $result = 1;
+           break;
+         case $Device["PositionStateStopped"]:
+           $result = 2;
+           break;
+        }
         $Characteristic = "PositionState";
         $result = intval($data);
         $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
         break;
       case $Device["CurrentPosition"]:
-          $result = intval($data);
+          $CurrenPositionMax = $evice["CurrenPositionMax"];
+          if ($data < 0) {
+            $result = 0;
+          } else {
+            $result = ($data / $CurrenPositionMax) * 100;
+          }
           $Characteristic ="CurrentPosition";
           $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
-        break;
+          break;
       case $Device["TargetPosition"]:
-          $result = intval($data);
+          $CurrenPositionMax = $evice["TargetPositionMax"];
+          if ($data < 0) {
+            $result = 0;
+          } else {
+            $result = ($data / $TargetPositionMax) * 100;
+          }
           $Characteristic ="TargetPosition";
           $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
-        break;
+          break;
+        }
       }
     }
-    }
-}
+  }
 
   public function GetConfigurationForm() {
     $anzahl = $this->ReadPropertyInteger("Anzahl");
@@ -113,8 +151,13 @@ class IPS_HomebridgeWindow extends HomeKitService {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "WindowID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "PositionState'.$count.'", "caption": "Status " },';
+      $form .= '{ "type": "SelectVariable", "name": "PositionStateDecreasing'.$count.'", "caption": "Decreasing Value " },';
+      $form .= '{ "type": "SelectVariable", "name": "PositionStateIncreasing'.$count.'", "caption": "Increasing Value " },';
+      $form .= '{ "type": "SelectVariable", "name": "PositionStateStopped'.$count.'", "caption": "Stopped Value " },';
       $form .= '{ "type": "SelectVariable", "name": "TargetPosition'.$count.'", "caption": "Target " },';
+      $form .= '{ "type": "SelectVariable", "name": "TargetPositionMax'.$count.'", "caption": "MaxValue " },';
       $form .= '{ "type": "SelectVariable", "name": "CurrentPosition'.$count.'", "caption": "Current" },';
+      $form .= '{ "type": "SelectVariable", "name": "CurrentPositionMax'.$count.'", "caption": "MaxValue " },';
       $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBWindow_removeAccessory('.$this->InstanceID.','.$count.');" },';
 
       if ($count == $anzahl) {
@@ -140,15 +183,40 @@ class IPS_HomebridgeWindow extends HomeKitService {
           case 'CurrentPosition':
             $VariableID = $Device["CurrentPosition"];
             $result = GetValue($VariableID);
-            //$result = ($result) ? 'true' : 'false';
+            $CurrenPositionMax = $evice["CurrenPositionMax"];
+            if ($result < 0) {
+              $result = 0;
+            } else {
+              $result = ($result / $CurrenPositionMax) * 100;
+            }
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
           case 'TargetPosition':
             $VariableID = $Device["TargetPosition"];
             $result = GetValue($VariableID);
+            $CurrenPositionMax = $evice["TargetPositionMax"];
+            if ($result < 0) {
+              $result = 0;
+            } else {
+              $result = ($result / $TargetPositionMax) * 100;
+            }
+            $Characteristic ="TargetPosition";
+            $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
           case 'PositionState':
             $VariableID = $Device["PositionState"];
             $result = GetValue($VariableID);
+            switch ($result) {
+             case $Device["PositionStateDecreasing"]:
+               $result = 0;
+               break;
+             case $Device["PositionStateIncreasing"]:
+               $result = 1;
+               break;
+             case $Device["PositionStateStopped"]:
+               $result = 2;
+               break;
+            }
             break;
         }
         $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
@@ -171,6 +239,13 @@ class IPS_HomebridgeWindow extends HomeKitService {
             $VariableID = $Device["CurrentPosition"];
             $variable = IPS_GetVariable($VariableID);
             $variableObject = IPS_GetObject($VariableID);
+            if ($value < 0) {
+              $value = 0;
+            } else {
+            $value = ($value / 100) * $Device["CurrentPositionMax"];
+            }
+            $result = $this->ConvertVariable($variable, $value);
+
             $this->SetValueToIPS($variable,$variableObject,$result);
             break;
           case 'TargetPosition':
@@ -178,6 +253,11 @@ class IPS_HomebridgeWindow extends HomeKitService {
             $VariableID = $Device["TargetPosition"];
             $variable = IPS_GetVariable($VariableID);
             $variableObject = IPS_GetObject($VariableID);
+            if ($value < 0) {
+              $value = 0;
+            } else {
+            $value = ($value / 100) * $Device["TargetPositionMax"];
+            }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $value);
             //Geräte Variable setzen
@@ -188,6 +268,17 @@ class IPS_HomebridgeWindow extends HomeKitService {
             $VariableID = $Device["PositionState"];
             $variable = IPS_GetVariable($VariableID);
             $variableObject = IPS_GetObject($VariableID);
+            switch ($value) {
+              case 0:
+                $result = $Device["PositionStateDecreasing"];
+                break;
+              case 1:
+                $result = $Device["PositionStateIncreasing"];
+                break;
+              case 2:
+                $result = $Device["PositionStateStopped"];
+                break;
+            }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $value);
             //Geräte Variable setzen
