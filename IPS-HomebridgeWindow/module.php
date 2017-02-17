@@ -117,7 +117,7 @@ class IPS_HomebridgeWindow extends HomeKitService {
         $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
         break;
       case $Device["CurrentPosition"]:
-          $CurrenPositionMax = $evice["CurrenPositionMax"];
+          $CurrenPositionMax = $device["CurrenPositionMax"];
           if ($data < 0) {
             $result = 0;
           } else {
@@ -127,7 +127,7 @@ class IPS_HomebridgeWindow extends HomeKitService {
           $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
           break;
       case $Device["TargetPosition"]:
-          $CurrenPositionMax = $evice["TargetPositionMax"];
+          $TargetPositionMax = $device["TargetPositionMax"];
           if ($data < 0) {
             $result = 0;
           } else {
@@ -183,7 +183,7 @@ class IPS_HomebridgeWindow extends HomeKitService {
           case 'CurrentPosition':
             $VariableID = $Device["CurrentPosition"];
             $result = GetValue($VariableID);
-            $CurrenPositionMax = $evice["CurrenPositionMax"];
+            $CurrenPositionMax = $device["CurrenPositionMax"];
             if ($result < 0) {
               $result = 0;
             } else {
@@ -194,7 +194,7 @@ class IPS_HomebridgeWindow extends HomeKitService {
           case 'TargetPosition':
             $VariableID = $Device["TargetPosition"];
             $result = GetValue($VariableID);
-            $CurrenPositionMax = $evice["TargetPositionMax"];
+            $TargetPositionMax = $device["TargetPositionMax"];
             if ($result < 0) {
               $result = 0;
             } else {
