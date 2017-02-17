@@ -197,14 +197,6 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
                 $result = 'false';
                 break;
             }
-            switch ($value) {
-              case $Device["VariableStateTrue"]:
-                $value = $Device["VariableStateTrue"];
-                break;
-              case $Device["VariableStateFalse"]:
-                $value = 'false';
-                break;
-            }
             if ($result == 'true' && $value == $Device["VariableStateFalse"]) {
               $variable = IPS_GetVariable($Device["VariableState"]);
               $variableObject = IPS_GetObject($Device["VariableState"]);
