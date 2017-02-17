@@ -45,7 +45,7 @@ class IPS_HomebridgeWindow extends HomeKitService {
         $Devices[$count]["TargetPosition"] = $this->ReadPropertyInteger("TargetPosition{$count}");
         $Devices[$count]["CurrentPosition"] = $this->ReadPropertyInteger("CurrentPosition{$count}");
 
-        $Devices[$count]["CurrenPositionMax"] = $this->ReadPropertInteger("CurrentPositionMax{$count}");
+        $Devices[$count]["CurrenPositionMax"] = $this->ReadPropertyInteger("CurrentPositionMax{$count}");
         $Devices[$count]["TargetPositionMax"] = $this->ReadPropertyInteger("TargetPositionMax{$count}");
 
         $Devices[$count]["PositionStateDecreasing"] = $this->ReadPropertyInteger("PositionStateDecreasing{$count}");
