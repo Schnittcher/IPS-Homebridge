@@ -81,7 +81,7 @@ class IPS_HomebridgeLightbulb extends HomeKitService {
           $Characteristic = "On";
           $data = $Data[0];
           if ($data > 0) {
-            $data = 1;
+            $data = $Device["VariableStateTrue"];
           }
           switch ($data) {
             case $Device["VariableStateTrue"]:
