@@ -151,9 +151,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "WindowID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "PositionState'.$count.'", "caption": "Status " },';
-      $form .= '{ "type": "SelectVariable", "name": "PositionStateDecreasing'.$count.'", "caption": "Decreasing Value " },';
-      $form .= '{ "type": "SelectVariable", "name": "PositionStateIncreasing'.$count.'", "caption": "Increasing Value " },';
-      $form .= '{ "type": "SelectVariable", "name": "PositionStateStopped'.$count.'", "caption": "Stopped Value " },';
+      $form .= '{ "type": "ValidationTextBox", "name": "PositionStateDecreasing'.$count.'", "caption": "Decreasing Value " },';
+      $form .= '{ "type": "ValidationTextBox", "name": "PositionStateIncreasing'.$count.'", "caption": "Increasing Value " },';
+      $form .= '{ "type": "ValidationTextBox", "name": "PositionStateStopped'.$count.'", "caption": "Stopped Value " },';
       $form .= '{ "type": "SelectVariable", "name": "TargetPosition'.$count.'", "caption": "Target " },';
       $form .= '{ "type": "ValidationTextBox", "name": "TargetPositionMax'.$count.'", "caption": "MaxValue " },';
       $form .= '{ "type": "SelectVariable", "name": "CurrentPosition'.$count.'", "caption": "Current" },';
