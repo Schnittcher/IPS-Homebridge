@@ -226,7 +226,7 @@ class IPS_HomebridgeWindow extends HomeKitService {
   }
 
   public function setVar($DeviceName, $value, $Characteristic) {
-    $Devices = unserialize($this->getBuffer("Switch Config"));
+    $Devices = unserialize($this->getBuffer("Window Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     for($count = 1; $count -1 < $anzahl; $count++) {
       $Device = $Devices[$count];
