@@ -322,7 +322,7 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
   private function addAccessory($DeviceName) {
     //Payload bauen
     $payload["name"] = $DeviceName;
-    $payload["service"] = "Window";
+    $payload["service"] = "WindowCovering";
 
     $array["topic"] ="add";
     $array["payload"] = $payload;
