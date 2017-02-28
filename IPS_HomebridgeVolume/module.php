@@ -127,7 +127,7 @@ class IPS_HomebridgeSpeaker extends HomeKitService {
         $form .= '{ "type": "ValidationTextBox", "name": "VariableMuteFalse'.$count.'", "caption": "Value False (not muted)" },';
         $form .= '{ "type": "SelectVariable", "name": "VariableVolume'.$count.'", "caption": "Volume" },';
         $form .= '{ "type": "NumberSpinner", "name": "VariableVolumeMax'.$count.'", "caption": "Max. Value", "digits": 2},';
-        $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBVolume_removeAccessory('.$this->InstanceID.','.$count.');" },';
+        $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBSpeaker_removeAccessory('.$this->InstanceID.','.$count.');" },';
         if ($count == $anzahl) {
           $form .= '{ "type": "Label", "label": "------------------" }';
         } else {
