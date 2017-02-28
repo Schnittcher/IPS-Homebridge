@@ -35,7 +35,7 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
         $this->RegisterPropertyInteger($PositionStateIncreasing, 0);
         $this->RegisterPropertyInteger($PositionStateStopped, 0);
 
-        $this->RegisterPropertyBoolean($CurrenPositiontInverse, false);
+        $this->RegisterPropertyBoolean($CurrentPositiontInverse, false);
         $this->RegisterPropertyBoolean($TargetPositionInverse, false);
       }
   }
@@ -59,7 +59,7 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
         $Devices[$count]["PositionStateIncreasing"] = $this->ReadPropertyInteger("PositionStateIncreasing{$count}");
         $Devices[$count]["PositionStateStopped"] = $this->ReadPropertyInteger("PositionStateStopped{$count}");
 
-        $Devices[$count]["CurrenPositiontInverse"] = $this->ReadPropertyBoolean("CurrenPositiontInverse{$count}");
+        $Devices[$count]["CurrentPositiontInverse"] = $this->ReadPropertyBoolean("CurrentPositiontInverse{$count}");
         $Devices[$count]["TargetPositionInverse"] = $this->ReadPropertyBoolean("TargetPositionInverse{$count}");
 
         $BufferNameState = $Devices[$count]["DeviceName"]. " PositionState";
@@ -133,7 +133,7 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
           } else {
             $result = ($data / $CurrentPositionMax) * 100;
           }
-          if ($Device["CurrenPositiontInverse"] == true) {
+          if ($Device["CurrentPositiontInverse"] == true) {
             $result = abs($result-$CurrentPositionMax);
           }
           $Characteristic ="CurrentPosition";
@@ -207,7 +207,7 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
             } else {
               $result = ($result / $CurrentPositionMax) * 100;
             }
-            if ($Device["CurrenPositiontInverse"] == true) {
+            if ($Device["CurrentPositiontInverse"] == true) {
               $result = abs($result-$CurrentPositionMax);
             }
             $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
@@ -268,7 +268,7 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
             } else {
             $value = ($value / 100) * $Device["CurrentPositionMax"];
             }
-            if ($Device["CurrenPositiontInverse"] == true) {
+            if ($Device["CurrentPositiontInverse"] == true) {
               $value = abs($result-$CurrentPositionMax);
             }
             $result = $this->ConvertVariable($variable, $value);
