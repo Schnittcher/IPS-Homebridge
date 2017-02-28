@@ -11,14 +11,14 @@ class IPS_HomebridgeSpeaker extends HomeKitService {
       //99 Geräte können pro Konfirgurationsform angelegt werden
       for($count = 1; $count -1 < 99; $count++) {
         $DeviceName = "DeviceName{$count}";
-        $VolumeDeviceID = "SpeakerDeviceID{$count}";
+        $SpeakerDeviceID = "SpeakerDeviceID{$count}";
         $VariableMute = "VariableMute{$count}";
         $VariableMuteTrue = "VariableMuteTrue{$count}";
         $VariableMuteFalse = "VariableMuteFalse{$count}";
         $VariableVolume = "VariableVolume{$count}";
         $VariableVolumeMax = "VariableVolumeMax{$count}";
         $this->RegisterPropertyString($DeviceName, "");
-        $this->RegisterPropertyInteger($VolumeDeviceID, 0);
+        $this->RegisterPropertyInteger($SpeakerDeviceID, 0);
         $this->RegisterPropertyInteger($VariableMute, 0);
         $this->RegisterPropertyInteger($VariableMuteTrue, 0);
         $this->RegisterPropertyInteger($VariableMuteFalse, 0);
@@ -121,7 +121,7 @@ class IPS_HomebridgeSpeaker extends HomeKitService {
       // Zählen wieviele Felder in der Form angelegt werden müssen
       for($count = 1; $count-1 < $anzahl; $count++) {
         $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
-        $form .= '{ "type": "SelectInstance", "name": "LightbulbID'.$count.'", "caption": "Gerät" },';
+        $form .= '{ "type": "SelectInstance", "name": "SpeakerDeviceID'.$count.'", "caption": "Gerät" },';
         $form .= '{ "type": "SelectVariable", "name": "VariableMute'.$count.'", "caption": "Mute" },';
         $form .= '{ "type": "ValidationTextBox", "name": "VariableMuteTrue'.$count.'", "caption": "Value True (Muted)" },';
         $form .= '{ "type": "ValidationTextBox", "name": "VariableMuteFalse'.$count.'", "caption": "Value False (not muted)" },';
