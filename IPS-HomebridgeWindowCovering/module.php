@@ -205,10 +205,10 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
             if ($result < 0) {
               $result = 0;
             } else {
+              if ($Device["CurrentPositionInverse"] == true) {
+                $result = abs($result-$CurrentPositionMax);
+              }
               $result = ($result / $CurrentPositionMax) * 100;
-            }
-            if ($Device["CurrentPositionInverse"] == true) {
-              $result = abs($result-$CurrentPositionMax);
             }
             $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
@@ -219,10 +219,10 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
             if ($result < 0) {
               $result = 0;
             } else {
+              if ($Device["TargetPositiontInverse"] == true) {
+                $result = abs($result-$TargetPositionMax);
+              }
               $result = ($result / $TargetPositionMax) * 100;
-            }
-            if ($Device["TargetPositiontInverse"] == true) {
-              $result = abs($result-$TargetPositionMax);
             }
             $Characteristic ="TargetPosition";
             $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
@@ -266,10 +266,10 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
             if ($value < 0) {
               $value = 0;
             } else {
+              if ($Device["CurrentPositionInverse"] == true) {
+                $value = abs($result-$CurrentPositionMax);
+              }
             $value = ($value / 100) * $Device["CurrentPositionMax"];
-            }
-            if ($Device["CurrentPositionInverse"] == true) {
-              $value = abs($result-$CurrentPositionMax);
             }
             $result = $this->ConvertVariable($variable, $value);
 
@@ -283,10 +283,10 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
             if ($value < 0) {
               $value = 0;
             } else {
+              if ($Device["TargetPositiontInverse"] == true) {
+                $value = abs($result-$TargetPositionMax);
+              }
             $value = ($value / 100) * $Device["TargetPositionMax"];
-            }
-            if ($Device["TargetPositiontInverse"] == true) {
-              $value = abs($result-$TargetPositionMax);
             }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $value);
