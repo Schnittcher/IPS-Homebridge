@@ -61,8 +61,8 @@ class IPS_HomebridgeSpeaker extends HomeKitService {
           array_push($RegisterBufferIDs,$Devices[$count]["VariableVolume"]);
           $this->RegisterMessages($RegisterBufferIDs, 10603);
           //Buffer mit der aktuellen Variablen ID befüllen
-          $this->SetBuffer($BufferName,$Devices[$count]["VariableMute"]);
-          $this->SetBuffer($BufferName,$Devices[$count]["VariableVolume"]);
+          $this->SetBuffer($BufferNameMute,$Devices[$count]["VariableMute"]);
+          $this->SetBuffer($BufferNameVolume,$Devices[$count]["VariableVolume"]);
 
           //Accessory anlegen
           $this->addAccessory($this->ReadPropertyString($DeviceNameCount));
