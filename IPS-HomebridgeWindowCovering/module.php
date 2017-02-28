@@ -1,7 +1,7 @@
 <?
 require_once(__DIR__ . "/../HomeKitService.php");
 
-class IPS_HomebridgeWindow extends HomeKitService {
+class IPS_HomebridgeWindowCovering extends HomeKitService {
   public function Create() {
       //Never delete this line!
       parent::Create();
@@ -21,6 +21,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
         $PositionStateIncreasing = "PositionStateIncreasing{$count}";
         $PositionStateStopped = "PositionStateStopped{$count}";
 
+        $CurrentPositionInverse = "CurrentPositionInverse{$count}";
+        $TargetPositionInverse = "TargetPositionInverse{$count}";
+
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($WindowID, 0);
         $this->RegisterPropertyInteger($CurrentPosition, 0);
@@ -31,11 +34,15 @@ class IPS_HomebridgeWindow extends HomeKitService {
         $this->RegisterPropertyInteger($PositionStateDecreasing, 0);
         $this->RegisterPropertyInteger($PositionStateIncreasing, 0);
         $this->RegisterPropertyInteger($PositionStateStopped, 0);
+
+        $this->RegisterPropertyBoolean($CurrenPositiontInverse, false);
+        $this->RegisterPropertyBoolean($TargetPositionInverse, false);
       }
   }
   public function ApplyChanges() {
       //Never delete this line!
       parent::ApplyChanges();
+      $this->SetReceiveDataFilter(".*WindowCovering.*");
       $this->ConnectParent("{86C2DE8C-FB21-44B3-937A-9B09BB66FB76}");
       $anzahl = $this->ReadPropertyInteger("Anzahl");
 
@@ -51,6 +58,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
         $Devices[$count]["PositionStateDecreasing"] = $this->ReadPropertyInteger("PositionStateDecreasing{$count}");
         $Devices[$count]["PositionStateIncreasing"] = $this->ReadPropertyInteger("PositionStateIncreasing{$count}");
         $Devices[$count]["PositionStateStopped"] = $this->ReadPropertyInteger("PositionStateStopped{$count}");
+
+        $Devices[$count]["CurrenPositiontInverse"] = $this->ReadPropertyBoolean("CurrenPositiontInverse{$count}");
+        $Devices[$count]["TargetPositionInverse"] = $this->ReadPropertyBoolean("TargetPositionInverse{$count}");
 
         $BufferNameState = $Devices[$count]["DeviceName"]. " PositionState";
         $BufferNameTarget = $Devices[$count]["DeviceName"]. " TargetPosition";
@@ -81,14 +91,14 @@ class IPS_HomebridgeWindow extends HomeKitService {
         }
       }
       $DevicesConfig = serialize($Devices);
-      $this->SetBuffer("Window Config",$DevicesConfig);
+      $this->SetBuffer("WindowCovering Config",$DevicesConfig);
     }
 
   public function Destroy() {
   }
 
   public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
-    $Devices = unserialize($this->getBuffer("Window Config"));
+    $Devices = unserialize($this->getBuffer("WindowCovering Config"));
     if ($Data[1] == true) {
     $anzahl = $this->ReadPropertyInteger("Anzahl");
 
@@ -123,6 +133,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
           } else {
             $result = ($data / $CurrentPositionMax) * 100;
           }
+          if ($Device["CurrenPositiontInverse"] == true) {
+            $result = abs($result-$CurrentPositionMax);
+          }
           $Characteristic ="CurrentPosition";
           $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
           break;
@@ -132,6 +145,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
             $result = 0;
           } else {
             $result = ($data / $TargetPositionMax) * 100;
+          }
+          if ($Device["TargetPositionInverse"] == true) {
+            $result = abs($result-$TargetPositionMax);
           }
           $Characteristic ="TargetPosition";
           $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
@@ -155,10 +171,12 @@ class IPS_HomebridgeWindow extends HomeKitService {
       $form .= '{ "type": "ValidationTextBox", "name": "PositionStateIncreasing'.$count.'", "caption": "Increasing Value " },';
       $form .= '{ "type": "ValidationTextBox", "name": "PositionStateStopped'.$count.'", "caption": "Stopped Value " },';
       $form .= '{ "type": "SelectVariable", "name": "TargetPosition'.$count.'", "caption": "Target " },';
+      $form .= '{ "type": "CheckBox", "name": "TargetPositionInverse'.$count.'", "caption": "Ja TargetPositionInverse" },';
       $form .= '{ "type": "ValidationTextBox", "name": "TargetPositionMax'.$count.'", "caption": "MaxValue " },';
       $form .= '{ "type": "SelectVariable", "name": "CurrentPosition'.$count.'", "caption": "Current" },';
+      $form .= '{ "type": "CheckBox", "name": "CurrentPositionInverse'.$count.'", "caption": "Ja CurrentPositionInverse" },';
       $form .= '{ "type": "ValidationTextBox", "name": "CurrentPositionMax'.$count.'", "caption": "MaxValue " },';
-      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBWindow_removeAccessory('.$this->InstanceID.','.$count.');" },';
+      $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBWindowCovering_removeAccessory('.$this->InstanceID.','.$count.');" },';
 
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
@@ -171,7 +189,7 @@ class IPS_HomebridgeWindow extends HomeKitService {
   }
 
   public function getVar($DeviceName, $Characteristic) {
-    $Devices = unserialize($this->getBuffer("Window Config"));
+    $Devices = unserialize($this->getBuffer("WindowCovering Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     for($count = 1; $count -1 < $anzahl; $count++) {
       $Device = $Devices[$count];
@@ -189,6 +207,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
             } else {
               $result = ($result / $CurrentPositionMax) * 100;
             }
+            if ($Device["CurrenPositiontInverse"] == true) {
+              $result = abs($result-$CurrentPositionMax);
+            }
             $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
           case 'TargetPosition':
@@ -199,6 +220,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
               $result = 0;
             } else {
               $result = ($result / $TargetPositionMax) * 100;
+            }
+            if ($Device["TargetPositiontInverse"] == true) {
+              $result = abs($result-$TargetPositionMax);
             }
             $Characteristic ="TargetPosition";
             $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
@@ -226,7 +250,7 @@ class IPS_HomebridgeWindow extends HomeKitService {
   }
 
   public function setVar($DeviceName, $value, $Characteristic) {
-    $Devices = unserialize($this->getBuffer("Window Config"));
+    $Devices = unserialize($this->getBuffer("WindowCovering Config"));
     $anzahl = $this->ReadPropertyInteger("Anzahl");
     for($count = 1; $count -1 < $anzahl; $count++) {
       $Device = $Devices[$count];
@@ -244,6 +268,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
             } else {
             $value = ($value / 100) * $Device["CurrentPositionMax"];
             }
+            if ($Device["CurrenPositiontInverse"] == true) {
+              $value = abs($result-$CurrentPositionMax);
+            }
             $result = $this->ConvertVariable($variable, $value);
 
             $this->SetValueToIPS($variable,$variableObject,$result);
@@ -257,6 +284,9 @@ class IPS_HomebridgeWindow extends HomeKitService {
               $value = 0;
             } else {
             $value = ($value / 100) * $Device["TargetPositionMax"];
+            }
+            if ($Device["TargetPositiontInverse"] == true) {
+              $value = abs($result-$TargetPositionMax);
             }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $value);
