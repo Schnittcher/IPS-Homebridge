@@ -1,7 +1,7 @@
 <?
 require_once(__DIR__ . "/../HomeKitService.php");
 
-class IPS_HomebridgeVolume extends HomeKitService {
+class IPS_HomebridgeSpeaker extends HomeKitService {
   public function Create() {
       //Never delete this line!
       parent::Create();
