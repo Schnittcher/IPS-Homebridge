@@ -20,7 +20,10 @@ class IPS_HomebridgeSpeaker extends HomeKitService {
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($VolumeDeviceID, 0);
         $this->RegisterPropertyInteger($VariableMute, 0);
+        $this->RegisterPropertyInteger($VariableMuteTrue, 0);
+        $this->RegisterPropertyInteger($VariableMuteFalse, 0);
         $this->RegisterPropertyInteger($VariableVolume, 0);
+        $this->RegisterPropertyInteger($VariableVolumeMax, 0);
       }
   }
   public function ApplyChanges() {
