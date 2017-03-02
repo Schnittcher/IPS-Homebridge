@@ -149,8 +149,8 @@ class IPS_HomebridgeSpeaker extends HomeKitService {
           //IPS Variable abfragen
           switch ($Characteristic) {
             case 'Mute':
-              //Lightbulb State abfragen
-              $result = floatval(GetValue($Device["VariableState"]));
+              //Mute abfragen
+              $result = floatval(GetValue($Device["VariableMute"]));
               if ($result > 0) {
                 $result = $Device["VariableMuteTrue"];
               }
@@ -188,7 +188,7 @@ class IPS_HomebridgeSpeaker extends HomeKitService {
         if ($DeviceName == $name) {
           switch ($Characteristic) {
             case 'Mute':
-              //Lightbulb State abfragen
+              //Mute abfragen
               $result = floatval(GetValue($Device["VariableMute"]));
               //IPS Variable für die Bridge umwandeln
         if ($result > 0) {
