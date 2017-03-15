@@ -356,7 +356,7 @@ class IPS_HomebridgeThermostat extends HomeKitService {
             break;
           case 'TargetTemperature':
             $VariableTargetTemperatureID = $Device["TargetTemperature"];
-            $variable = IPS_GetVariable($VariableCurrentTemperatureID);
+            $variable = IPS_GetVariable($VariableTargetTemperatureID);
             $variableObject = IPS_GetObject($VariableCurrentTemperatureID);
             $result = $this->ConvertVariable($variable, $value);
             $this->SetValueToIPS($variable,$variableObject,$result);
