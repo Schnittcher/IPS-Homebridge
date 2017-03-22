@@ -132,14 +132,26 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             //IPS Variable abfragen
             $LockCurrentStateID = $Device["LockCurrentState"];
             $result = GetValue($LockCurrentStateID);
-            //$result = ($result) ? 'true' : 'false';
+            $result = ($result) ? 'true' : 'false';
+            if ($result == 'true') {
+              $result = 1;
+            }
+            if ($result == 'false') {
+              $result = 0;
+            }
             $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
             break;
           case 'LockTargetState':
             //IPS Variable abfragen
             $LockTargetStateID = $Device["LockTargetState"];
             $result = GetValue($LockTargetStateID);
-            //$result = ($result) ? 'true' : 'false';
+            $result = ($result) ? 'true' : 'false';
+            if ($result == 'true') {
+              $result = 1;
+            }
+            if ($result == 'false') {
+              $result = 0;
+            }
             $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
             break;
         }
