@@ -32,7 +32,7 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
       for($count = 1; $count-1 < $anzahl; $count++) {
         $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
         $Devices[$count]["LockCurrentState"] = $this->ReadPropertyInteger("LockCurrentState{$count}");
-        $Devices[$count]["LockTargetState"] = $this->ReadPropertyBoolean("LockTargetState{$count}");
+        $Devices[$count]["LockTargetState"] = $this->ReadPropertyInteger("LockTargetState{$count}");
 
         $BufferNameLockCurrentState = $Devices[$count]["DeviceName"]." LockCurrentState";
         $BufferNameLockTargetState = $Devices[$count]["DeviceName"]." LockTargetState";
