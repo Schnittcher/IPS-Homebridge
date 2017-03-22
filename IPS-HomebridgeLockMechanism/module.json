@@ -1,0 +1,11 @@
+{
+	"id": "{B04E74F1-1F21-4302-9F4C-D41A2883498E}",
+	"name": "IPS_HomebridgeLockMechanism",
+	"type": 3,
+	"vendor": "",
+	"aliases": ["IPS_HomebridgeLockMechanism"],
+	"parentRequirements": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}", "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
+	"childRequirements": [],
+	"implemented": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}"],
+	"prefix": "HBLockMechanism"
+}
