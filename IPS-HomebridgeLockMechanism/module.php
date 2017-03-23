@@ -234,7 +234,7 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
                 break;
             }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
-            $result = $this->ConvertVariable($variable, $state);
+            $result = $this->ConvertVariable($variable, $result);
             //Geräte Variable setzen
             $this->SetValueToIPS($variable,$variableObject,$result);
             break;
