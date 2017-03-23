@@ -230,7 +230,7 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
                 $result = $Device["LockTargetStateTrue"];
                 break;
               case 1:
-                $result = $Device["LockTargetStateFalse"];;
+                $result = $Device["LockTargetStateFalse"];
                 break;
             }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
