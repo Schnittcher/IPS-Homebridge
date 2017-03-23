@@ -98,10 +98,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $Characteristic = "LockCurrentState";
             $data = $Data[0];
             switch ($data) {
-              case $Device["LockCurrentStateTrue"]:
+              case 0:
                 $result = $Device["LockCurrentStateTrue"];
                 break;
-              case $Device["LockCurrentStateFalse"]:
+              case 1:
                 $result = $Device["LockCurrentStateFalse"];
                 break;
             }
@@ -111,10 +111,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
           case $Device["LockTargetState"]:
             $Characteristic = "LockTargetState";
             switch ($data) {
-              case $Device["LockTargetStateTrue"]:
+              case 0:
                 $result = $Device["LockTargetStateTrue"];
                 break;
-              case $Device["LockTargetStateFalse"]:
+              case 1:
                 $result = $Device["LockTargetStateFalse"];
                 break;
             }
@@ -208,7 +208,7 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $LockCurrentStateID = $Device["LockCurrentState"];
             $variable = IPS_GetVariable($LockCurrentStateID);
             $variableObject = IPS_GetObject($LockCurrentStateID);
-            switch ($value) {
+            switch ($state) {
               case 0:
                 $result = $Device["LockCurrentStateTrue"];
                 break;
@@ -225,7 +225,7 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $LockTargetStateID = $Device["LockTargetState"];
             $variable = IPS_GetVariable($LockTargetStateID);
             $variableObject = IPS_GetObject($LockTargetStateID);
-            switch ($value) {
+            switch ($state) {
               case 0:
                 $result = $Device["LockTargetStateTrue"];
                 break;
