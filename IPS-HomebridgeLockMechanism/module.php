@@ -17,10 +17,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
         $LockTargetState = "LockTargetState{$count}";
 
         $LockCurrentStateTrue = "LockCurrentStateTrue{$count}";
-        $LockCurrentStateFalse = "LockCurrentStateTrue{$count}";
+        $LockCurrentStateFalse = "LockCurrentStateFalse{$count}";
 
         $LockTargetStateTrue = "LockTargetStateTrue{$count}";
-        $LockTargetStateFalse = "LockTargetStateTrue{$count}";
+        $LockTargetStateFalse = "LockTargetStateFalse{$count}";
 
         $this->RegisterPropertyInteger($LockCurrentStateTrue, 1);
         $this->RegisterPropertyInteger($LockCurrentStateFalse, 0);
@@ -46,9 +46,9 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
         $Devices[$count]["LockCurrentState"] = $this->ReadPropertyInteger("LockCurrentState{$count}");
         $Devices[$count]["LockTargetState"] = $this->ReadPropertyInteger("LockTargetState{$count}");
         $Devices[$count]["LockCurrentStateTrue"] = $this->ReadPropertyInteger("LockCurrentStateTrue{$count}");
-        $Devices[$count]["LockCurrentStateFalse"] = $this->ReadPropertyInteger("LockCurrentStateTrue{$count}");
+        $Devices[$count]["LockCurrentStateFalse"] = $this->ReadPropertyInteger("LockCurrentStateFalse{$count}");
         $Devices[$count]["LockTargetStateTrue"] = $this->ReadPropertyInteger("LockTargetStateTrue{$count}");
-        $Devices[$count]["LockTargetStateTrue"] = $this->ReadPropertyInteger("LockTargetStateTrue{$count}");
+        $Devices[$count]["LockTargetStateFalse"] = $this->ReadPropertyInteger("LockTargetStateFalse{$count}");
 
         $BufferNameLockCurrentState = $Devices[$count]["DeviceName"]." LockCurrentState";
         $BufferNameLockTargetState = $Devices[$count]["DeviceName"]." LockTargetState";
