@@ -164,7 +164,7 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
           case 'LockCurrentState':
             //IPS Variable abfragen
             $LockCurrentStateID = $Device["LockCurrentState"];
-            $result = GetValue($LockCurrentStateID);
+            $result = floatval(GetValue($LockCurrentStateID));
             switch ($result) {
               case $Device["LockCurrentStateTrue"]:
                 $result = $Device["LockCurrentStateTrue"];
@@ -178,7 +178,7 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
           case 'LockTargetState':
             //IPS Variable abfragen
             $LockTargetStateID = $Device["LockTargetState"];
-            $result = GetValue($LockTargetStateID);
+            $result = floatval(GetValue($LockTargetStateID));
             switch ($result) {
               case $Device["LockTargetStateTrue"]:
                 $result = $Device["LockTargetStateTrue"];
