@@ -166,10 +166,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $LockCurrentStateID = $Device["LockCurrentState"];
             $result = floatval(GetValue($LockCurrentStateID));
             switch ($result) {
-              case $Device["LockCurrentStateTrue"]:
+              case 0:
                 $result = $Device["LockCurrentStateTrue"];
                 break;
-              case $Device["LockCurrentStateFalse"]:
+              case 1:
                 $result = $Device["LockCurrentStateFalse"];
                 break;
             }
@@ -180,10 +180,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $LockTargetStateID = $Device["LockTargetState"];
             $result = floatval(GetValue($LockTargetStateID));
             switch ($result) {
-              case $Device["LockTargetStateTrue"]:
+              case 0:
                 $result = $Device["LockTargetStateTrue"];
                 break;
-              case $Device["LockTargetStateFalse"]:
+              case 1:
                 $result = $Device["LockTargetStateFalse"];
                 break;
             }
@@ -210,10 +210,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $variableObject = IPS_GetObject($LockCurrentStateID);
             switch ($value) {
               case 0:
-                $result = $Device["LockCurrentStateFalse"];
+                $result = $Device["LockCurrentStateTrue"];
                 break;
               case 1:
-                $result = $Device["LockCurrentStateTrue"];;
+                $result = $Device["LockCurrentStateFalse"];
                 break;
             }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
@@ -227,10 +227,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $variableObject = IPS_GetObject($LockTargetStateID);
             switch ($value) {
               case 0:
-                $result = $Device["LockTargetStateFalse"];
+                $result = $Device["LockTargetStateTrue"];
                 break;
               case 1:
-                $result = $Device["LockTargetStateTrue"];;
+                $result = $Device["LockTargetStateFalse"];;
                 break;
             }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
