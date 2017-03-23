@@ -99,10 +99,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $data = $Data[0];
             switch ($data) {
               case $Device["LockCurrentStateTrue"]:
-                $result = 'true';
+                $result = $Device["LockCurrentStateTrue"];
                 break;
               case $Device["LockCurrentStateFalse"]:
-                $result = 'false';
+                $result = $Device["LockCurrentStateFalse"];
                 break;
             }
             $this->SendDebug("MessageSink Result", $result,0);
@@ -112,10 +112,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $Characteristic = "LockTargetState";
             switch ($data) {
               case $Device["LockTargetStateTrue"]:
-                $result = 'true';
+                $result = $Device["LockTargetStateTrue"];
                 break;
               case $Device["LockTargetStateFalse"]:
-                $result = 'false';
+                $result = $Device["LockTargetStateFalse"];
                 break;
             }
             $this->SendDebug("MessageSink Result", $result,0);
@@ -167,10 +167,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $result = GetValue($LockCurrentStateID);
             switch ($result) {
               case $Device["LockCurrentStateTrue"]:
-                $result = 'true';
+                $result = $Device["LockCurrentStateTrue"];
                 break;
               case $Device["LockCurrentStateFalse"]:
-                $result = 'false';
+                $result = $Device["LockCurrentStateFalse"];
                 break;
             }
             $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
@@ -181,10 +181,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $result = GetValue($LockTargetStateID);
             switch ($result) {
               case $Device["LockTargetStateTrue"]:
-                $result = 'true';
+                $result = $Device["LockTargetStateTrue"];
                 break;
               case $Device["LockTargetStateFalse"]:
-                $result = 'false';
+                $result = $Device["LockTargetStateFalse"];
                 break;
             }
             $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
