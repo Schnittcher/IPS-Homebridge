@@ -15,6 +15,18 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
         $LockMechanismID = "SwitchID{$count}";
         $LockCurrentState = "LockCurrentState{$count}";
         $LockTargetState = "LockTargetState{$count}";
+
+        $LockCurrentStateTrue = "LockCurrentStateTrue{$count}";
+        $LockCurrentStateFalse = "LockCurrentStateTrue{$count}";
+
+        $LockTargetStateTrue = "LockTargetStateTrue{$count}";
+        $LockTargetStateFalse = "LockTargetStateTrue{$count}";
+
+        $this->RegisterPropertyInteger($LockCurrentStateTrue, 1);
+        $this->RegisterPropertyInteger($LockCurrentStateFalse, 0);
+        $this->RegisterPropertyInteger($LockTargetStateTrue, 1);
+        $this->RegisterPropertyInteger($LockTargetStateFalse, 0);
+
         $this->RegisterPropertyString($DeviceName, "");
         $this->RegisterPropertyInteger($LockMechanismID, 0);
         $this->RegisterPropertyInteger($LockCurrentState, 0);
@@ -33,6 +45,10 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
         $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
         $Devices[$count]["LockCurrentState"] = $this->ReadPropertyInteger("LockCurrentState{$count}");
         $Devices[$count]["LockTargetState"] = $this->ReadPropertyInteger("LockTargetState{$count}");
+        $Devices[$count]["LockCurrentStateTrue"] = $this->ReadPropertyInteger("LockCurrentStateTrue{$count}");
+        $Devices[$count]["LockCurrentStateFalse"] = $this->ReadPropertyInteger("LockCurrentStateTrue{$count}");
+        $Devices[$count]["LockTargetStateTrue"] = $this->ReadPropertyInteger("LockTargetStateTrue{$count}");
+        $Devices[$count]["LockTargetStateTrue"] = $this->ReadPropertyInteger("LockTargetStateTrue{$count}");
 
         $BufferNameLockCurrentState = $Devices[$count]["DeviceName"]." LockCurrentState";
         $BufferNameLockTargetState = $Devices[$count]["DeviceName"]." LockTargetState";
@@ -81,14 +97,27 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
           case $Device["LockCurrentState"]:
             $Characteristic = "LockCurrentState";
             $data = $Data[0];
-            $result = ($data) ? 'true' : 'false';
+            switch ($data) {
+              case $Device["LockCurrentStateTrue"]:
+                $result = 'true';
+                break;
+              case $Device["LockCurrentStateFalse"]:
+                $result = 'false';
+                break;
+            }
             $this->SendDebug("MessageSink Result", $result,0);
             $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
           case $Device["LockTargetState"]:
             $Characteristic = "LockTargetState";
-            $data = $Data[0];
-            $result = ($data) ? 'true' : 'false';
+            switch ($data) {
+              case $Device["LockTargetStateTrue"]:
+                $result = 'true';
+                break;
+              case $Device["LockTargetStateFalse"]:
+                $result = 'false';
+                break;
+            }
             $this->SendDebug("MessageSink Result", $result,0);
             $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
             break;
@@ -107,7 +136,11 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "SwitchID'.$count.'", "caption": "Gerät" },';
       $form .= '{ "type": "SelectVariable", "name": "LockCurrentState'.$count.'", "caption": "LockCurrentState" },';
+      $form .= '{ "type": "ValidationTextBox", "name": "LockCurrentStateTrue'.$count.'", "caption": "Value True (Auf)" },';
+      $form .= '{ "type": "ValidationTextBox", "name": "LockCurrentStateFalse'.$count.'", "caption": "Value False (Zu)" },';
       $form .= '{ "type": "SelectVariable", "name": "LockTargetState'.$count.'", "caption": "LockTargetState" },';
+      $form .= '{ "type": "ValidationTextBox", "name": "LockTargetStateTrue'.$count.'", "caption": "Value True (Auf)" },';
+      $form .= '{ "type": "ValidationTextBox", "name": "LockTargetStateFalse'.$count.'", "caption": "Value False (Zu)" },';
       $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBLockMechanism_removeAccessory('.$this->InstanceID.','.$count.');" },';
       if ($count == $anzahl) {
         $form .= '{ "type": "Label", "label": "------------------" }';
@@ -132,12 +165,13 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             //IPS Variable abfragen
             $LockCurrentStateID = $Device["LockCurrentState"];
             $result = GetValue($LockCurrentStateID);
-            $result = ($result) ? 'true' : 'false';
-            if ($result == 'true') {
-              $result = 1;
-            }
-            if ($result == 'false') {
-              $result = 0;
+            switch ($result) {
+              case $Device["LockCurrentStateTrue"]:
+                $result = 'true';
+                break;
+              case $Device["LockCurrentStateFalse"]:
+                $result = 'false';
+                break;
             }
             $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
             break;
@@ -145,12 +179,13 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             //IPS Variable abfragen
             $LockTargetStateID = $Device["LockTargetState"];
             $result = GetValue($LockTargetStateID);
-            $result = ($result) ? 'true' : 'false';
-            if ($result == 'true') {
-              $result = 1;
-            }
-            if ($result == 'false') {
-              $result = 0;
+            switch ($result) {
+              case $Device["LockTargetStateTrue"]:
+                $result = 'true';
+                break;
+              case $Device["LockTargetStateFalse"]:
+                $result = 'false';
+                break;
             }
             $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
             break;
@@ -173,6 +208,14 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $LockCurrentStateID = $Device["LockCurrentState"];
             $variable = IPS_GetVariable($LockCurrentStateID);
             $variableObject = IPS_GetObject($LockCurrentStateID);
+            switch ($value) {
+              case 0:
+                $result = $Device["LockCurrentStateFalse"];
+                break;
+              case 1:
+                $result = $Device["LockCurrentStateTrue"];;
+                break;
+            }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $state);
             //Geräte Variable setzen
@@ -182,6 +225,14 @@ class IPS_HomebridgeLockMechanism extends HomeKitService {
             $LockTargetStateID = $Device["LockTargetState"];
             $variable = IPS_GetVariable($LockTargetStateID);
             $variableObject = IPS_GetObject($LockTargetStateID);
+            switch ($value) {
+              case 0:
+                $result = $Device["LockTargetStateFalse"];
+                break;
+              case 1:
+                $result = $Device["LockTargetStateTrue"];;
+                break;
+            }
             //den übgergebenen Wert in den VariablenTyp für das IPS-Gerät umwandeln
             $result = $this->ConvertVariable($variable, $state);
             //Geräte Variable setzen
