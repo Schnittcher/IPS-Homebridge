@@ -30,15 +30,15 @@ class IPS_HomebridgeThermostat extends HomeKitService {
         $this->RegisterPropertyInteger($ThermostatID, 0);
         //CurrentHeatingCoolingState
         $this->RegisterPropertyInteger($CurrentHeatingCoolingState, 0);
-        $this->RegisterPropertyInteger($CurrentHeatingCoolingOff, "");
-        $this->RegisterPropertyInteger($CurrentHeatingCoolingHeating, "");
-        $this->RegisterPropertyInteger($CurrentHeatingCoolingCooling, "");
+        $this->RegisterPropertyInteger($CurrentHeatingCoolingOff, 0);
+        $this->RegisterPropertyInteger($CurrentHeatingCoolingHeating, 0);
+        $this->RegisterPropertyInteger($CurrentHeatingCoolingCooling, 0);
         //TargetHeatingCoolingState
         $this->RegisterPropertyInteger($TargetHeatingCoolingState, 0);
-        $this->RegisterPropertyInteger($TargetHeatingCoolingOff, "");
-        $this->RegisterPropertyInteger($TargetHeatingCoolingHeating, "");
-        $this->RegisterPropertyInteger($TargetHeatingCoolingCooling, "");
-        $this->RegisterPropertyInteger($TargetHeatingCoolingAuto, "");
+        $this->RegisterPropertyInteger($TargetHeatingCoolingOff, 0);
+        $this->RegisterPropertyInteger($TargetHeatingCoolingHeating, 0);
+        $this->RegisterPropertyInteger($TargetHeatingCoolingCooling, 0);
+        $this->RegisterPropertyInteger($TargetHeatingCoolingAuto, 0);
 
         $this->RegisterPropertyInteger($CurrentTemperature, 0);
         $this->RegisterPropertyInteger($TargetTemperature, 0);
