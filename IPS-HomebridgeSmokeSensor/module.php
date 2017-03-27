@@ -35,9 +35,9 @@ class IPS_HomebridgeSmokeSensor extends HomeKitService {
     $Devices = [];
     for($count = 1; $count-1 < $anzahl; $count++) {
       $Devices[$count]["DeviceName"] = $this->ReadPropertyString("DeviceName{$count}");
-      $Devices[$count]["VariableSmokeDetected"] = $this->ReadPropertyString("SmokeDetected{$count}");
-      $Devices[$count]["VariableStatusTampered"] = $this->ReadPropertyString("StatusTampered{$count}");
-      $Devices[$count]["VariableStatusLowBattery"] = $this->ReadPropertyString("StatusLowBattery{$count}");
+      $Devices[$count]["VariableSmokeDetected"] = $this->ReadPropertyInteger("SmokeDetected{$count}");
+      $Devices[$count]["VariableStatusTampered"] = $this->ReadPropertyInteger("StatusTampered{$count}");
+      $Devices[$count]["VariableStatusLowBattery"] = $this->ReadPropertyInteger("StatusLowBattery{$count}");
       $Devices[$count]["SmokeDummyOptional"] = $this->ReadPropertyBoolean("SmokeDummyOptional{$count}");
       $DeviceNameCount = "DeviceName{$count}";
       $SmokeDetectedCount = "SmokeDetected{$count}";
