@@ -283,7 +283,7 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
             if ($value < 0) {
               $value = 0;
             } else {
-              if ($Device["TargetPositiontInverse"] == true) {
+              if ($Device["TargetPositionInverse"] == true) {
                 $value = abs($result-$TargetPositionMax);
               }
             $value = ($value / 100) * $Device["TargetPositionMax"];
