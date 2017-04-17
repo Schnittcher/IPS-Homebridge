@@ -123,7 +123,7 @@ class IPS_HomebridgeWindowCovering extends HomeKitService {
            break;
         }
         $Characteristic = "PositionState";
-        $result = intval($data);
+        $result = intval($result);
         $this->sendJSONToParent("setValue", $Characteristic, $DeviceName, $result);
         break;
       case $Device["CurrentPosition"]:
