@@ -128,6 +128,7 @@ class HomeKitService extends IPSModule {
   	        }
   	}
     $s = $s * 100;
+    $l = $l * 100;
 
   	return array( round( $h, 2 ), round( $s, 2 ), round( $l, 2 ) );
   }
