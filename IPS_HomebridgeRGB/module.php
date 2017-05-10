@@ -103,14 +103,14 @@ class IPS_HomebridgeRGB extends HomeKitService {
             $RGB = $this->hex2rgb(dechex($data));
             $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
             if ($HLS[0] < 0 AND $HLS[1] < 0 and $HLS[2] < 0) {
-              $this->SendDebug("MessageSink aus", $HLS,0);
+              $this->SendDebug("MessageSink aus", "false",0);
               $this->sendJSONToParent("setValue", "Hue", $DeviceName, 0);
               $this->sendJSONToParent("setValue", "Saturation", $DeviceName, 0);
               $this->sendJSONToParent("setValue", "Brightness", $DeviceName, 0);
               $this->sendJSONToParent("setValue", "On", $DeviceName, 'false');
             }
             else {
-              $this->SendDebug("MessageSink an", print_r($HLS),0);
+              $this->SendDebug("MessageSink an", "true",0);
               $this->sendJSONToParent("setValue", "Hue", $DeviceName, number_format($HLS[0], 2, '.', ''));
               $this->sendJSONToParent("setValue", "Saturation", $DeviceName, number_format($HLS[1], 2, '.', ''));
               $this->sendJSONToParent("setValue", "Brightness", $DeviceName, number_format($HLS[2], 2, '.', ''));
@@ -166,21 +166,21 @@ class IPS_HomebridgeRGB extends HomeKitService {
             break;
           case 'Hue':
             //Lightbulb Hue abfragen
-            $result = dechex(GetValue($Device["VariableRGB"]));
+            $result = strval(dechex(GetValue($Device["VariableRGB"])));
             $RGB = $this->hex2rgb(dechex($result));
             $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
             $result = number_format($HLS[0], 2, '.', '');
             break;
         case 'Saturation':
           //Lightbulb Saturation abfragen
-          $result = dechex(GetValue($Device["VariableRGB"]));
+          $result = strval(dechex(GetValue($Device["VariableRGB"])));
           $RGB = $this->hex2rgb(dechex($result));
           $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
           $result = number_format($HLS[1], 2, '.', '');
           break;
         case 'Brightness':
           //Lightbulb Brightness abfragen
-          $result = dechex(GetValue($Device["VariableRGB"]));
+          $result = strval(dechex(GetValue($Device["VariableRGB"])));
           $RGB = $this->hex2rgb(dechex($result));
           $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
           $result = intval($HLS[2]);
