@@ -108,9 +108,9 @@ class IPS_HomebridgeRGB extends HomeKitService {
               $this->sendJSONToParent("setValue", "On", $DeviceName, 'false');
             }
             else {
-              $this->sendJSONToParent("setValue", "Hue", $DeviceName, $HLS[0]);
-              $this->sendJSONToParent("setValue", "Saturation", $DeviceName, $HLS[1]);
-              $this->sendJSONToParent("setValue", "Brightness", $DeviceName, $HLS[2]);
+              $this->sendJSONToParent("setValue", "Hue", $DeviceName, number_format($HLS[0], 2, '.', ''));
+              $this->sendJSONToParent("setValue", "Saturation", $DeviceName, number_format($HLS[1], 2, '.', ''));
+              $this->sendJSONToParent("setValue", "Brightness", $DeviceName, number_format($HLS[2], 2, '.', ''));
               $this->sendJSONToParent("setValue", "On", $DeviceName, 'true');
             }
         }
