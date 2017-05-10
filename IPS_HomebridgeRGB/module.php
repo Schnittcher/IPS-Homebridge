@@ -157,6 +157,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
           case 'On':
             //RGB State abfragen
             $result = strval(dechex(GetValue($Device["VariableRGB"])));
+            $this->SendDebug("getVar On", $result,0);
             if ($result != 0) {
               $result = 'true';
             }
