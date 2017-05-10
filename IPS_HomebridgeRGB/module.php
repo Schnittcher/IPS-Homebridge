@@ -100,7 +100,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
           $data = $Data[0];
 
             $RGB = $this->hex2rgb(dechex($data));
-            $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]));
+            $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
             if ($HLS[0] < 0 AND $HLS[1] < 0 and $HLS[2] < 0) {
               $this->sendJSONToParent("setValue", "Hue", $DeviceName, 0);
               $this->sendJSONToParent("setValue", "Saturation", $DeviceName, 0);
