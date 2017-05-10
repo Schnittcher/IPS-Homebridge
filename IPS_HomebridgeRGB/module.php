@@ -168,7 +168,6 @@ class IPS_HomebridgeRGB extends HomeKitService {
             $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
             $result = number_format($HLS[0], 2, '.', '');
             break;
-        }
         case 'Saturation':
           //Lightbulb Saturation abfragen
           $result = dechex(GetValue($Device["VariableRGB"]));
@@ -176,14 +175,13 @@ class IPS_HomebridgeRGB extends HomeKitService {
           $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
           $result = number_format($HLS[1], 2, '.', '');
           break;
-      }
-      case 'Brightness':
-        //Lightbulb Brightness abfragen
-        $result = dechex(GetValue($Device["VariableRGB"]));
-        $RGB = $this->hex2rgb(dechex($result));
-        $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
-        $result = intval($HLS[2]);
-        break;
+        case 'Brightness':
+          //Lightbulb Brightness abfragen
+          $result = dechex(GetValue($Device["VariableRGB"]));
+          $RGB = $this->hex2rgb(dechex($result));
+          $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
+          $result = intval($HLS[2]);
+          break;
     }
         //Status an die Bridge senden
         $this->sendJSONToParent("callback", $Characteristic, $DeviceName, $result);
