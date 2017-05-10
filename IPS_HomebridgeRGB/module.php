@@ -155,17 +155,17 @@ class IPS_HomebridgeRGB extends HomeKitService {
             //RGB State abfragen
             $result = dechex(GetValue($Device["VariableRGB"]));
             if ($result != 0) {
-              $result = 'true'
+              $result = 'true';
             }
             else {
-              $result = 'false'
+              $result = 'false';
             }
             break;
           case 'Hue':
             //Lightbulb Hue abfragen
             $result = dechex(GetValue($Device["VariableRGB"]));
             $RGB = $this->hex2rgb(dechex($result));
-            $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]));
+            $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
             $result = number_format($HLS[0], 2, '.', '');
             break;
         }
@@ -173,7 +173,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
           //Lightbulb Saturation abfragen
           $result = dechex(GetValue($Device["VariableRGB"]));
           $RGB = $this->hex2rgb(dechex($result));
-          $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]));
+          $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
           $result = number_format($HLS[1], 2, '.', '');
           break;
       }
@@ -181,7 +181,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
         //Lightbulb Brightness abfragen
         $result = dechex(GetValue($Device["VariableRGB"]));
         $RGB = $this->hex2rgb(dechex($result));
-        $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]));
+        $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
         $result = intval($HLS[2]);
         break;
     }
@@ -204,10 +204,10 @@ class IPS_HomebridgeRGB extends HomeKitService {
           case 'On':
             $result = dechex(GetValue($Device["VariableRGB"]));
             if ($result != 0) {
-              $result = '000000'
+              $result = '000000';
             }
             else {
-              $result = 'FFFFFF'
+              $result = 'FFFFFF';
             }
             $variable = IPS_GetVariable($Device["VariableRGB"]);
             $variableObject = IPS_GetObject($Device["VariableRGB"]);
