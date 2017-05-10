@@ -60,7 +60,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
           $this->RegisterMessages($RegisterBufferIDs, 10603);
           //Buffer mit den aktuellen Variablen IDs befüllen für State und Brightness
           $this->SetBuffer($BufferNameState,$Devices[$count]["VariableState"]);
-          $this->SetBuffer($BufferNameBrightness,$Devices[$count]["VariableRGB"]);
+          $this->SetBuffer($BufferNameRGB,$Devices[$count]["VariableRGB"]);
           $this->addAccessory($Devices[$count]["DeviceName"]);
         } else {
           return;
