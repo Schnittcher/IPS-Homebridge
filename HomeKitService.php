@@ -77,5 +77,57 @@ class HomeKitService extends IPSModule {
       SetValue($variable["VariableID"],$result);
     }
   }
+
+  protected function hex2rgb($hex) {
+     $hex = str_replace("#", "", $hex);
+
+     if(strlen($hex) == 3) {
+        $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+        $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+        $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+     } else {
+        $r = hexdec(substr($hex,0,2));
+        $g = hexdec(substr($hex,2,2));
+        $b = hexdec(substr($hex,4,2));
+     }
+     $rgb = array($r, $g, $b);
+     //return implode(",", $rgb); // returns the rgb values separated by commas
+     return $rgb; // returns an array with the rgb values
+  }
+
+  protected function rgbToHsl( $r, $g, $b ) {
+  	$oldR = $r;
+  	$oldG = $g;
+  	$oldB = $b;
+  	$r /= 255;
+  	$g /= 255;
+  	$b /= 255;
+      $max = max( $r, $g, $b );
+  	$min = min( $r, $g, $b );
+  	$h;
+  	$s;
+  	$l = ( $max + $min ) / 2;
+  	$d = $max - $min;
+      	if( $d == 0 ){
+          	$h = $s = 0; // achromatic
+      	} else {
+          	$s = $d / ( 1 - abs( 2 * $l - 1 ) );
+  		switch( $max ){
+  	            case $r:
+  	            	$h = 60 * fmod( ( ( $g - $b ) / $d ), 6 );
+                          if ($b > $g) {
+  	                    $h += 360;
+  	                }
+  	                break;
+  	            case $g:
+  	            	$h = 60 * ( ( $b - $r ) / $d + 2 );
+  	            	break;
+  	            case $b:
+  	            	$h = 60 * ( ( $r - $g ) / $d + 4 );
+  	            	break;
+  	        }
+  	}
+  	return array( round( $h, 2 ), round( $s, 2 ), round( $l, 2 ) );
+  }
 }
 ?>
