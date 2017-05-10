@@ -1,4 +1,5 @@
 <?
+
 require_once(__DIR__ . "/../HomeKitService.php");
 class IPS_HomebridgeRGB extends HomeKitService {
   public function Create() {
@@ -102,12 +103,14 @@ class IPS_HomebridgeRGB extends HomeKitService {
             $RGB = $this->hex2rgb(dechex($data));
             $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
             if ($HLS[0] < 0 AND $HLS[1] < 0 and $HLS[2] < 0) {
+              $this->SendDebug("MessageSink aus", $HLS,0);
               $this->sendJSONToParent("setValue", "Hue", $DeviceName, 0);
               $this->sendJSONToParent("setValue", "Saturation", $DeviceName, 0);
               $this->sendJSONToParent("setValue", "Brightness", $DeviceName, 0);
               $this->sendJSONToParent("setValue", "On", $DeviceName, 'false');
             }
             else {
+              $this->SendDebug("MessageSink an", $HLS,0);
               $this->sendJSONToParent("setValue", "Hue", $DeviceName, number_format($HLS[0], 2, '.', ''));
               $this->sendJSONToParent("setValue", "Saturation", $DeviceName, number_format($HLS[1], 2, '.', ''));
               $this->sendJSONToParent("setValue", "Brightness", $DeviceName, number_format($HLS[2], 2, '.', ''));
