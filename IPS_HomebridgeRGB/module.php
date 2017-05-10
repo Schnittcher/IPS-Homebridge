@@ -161,7 +161,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
             $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
             $this->SendDebug("getVar On", $HLS[0]." ".$HLS[1]." ".$HLS[2],0);
             //if ($result != 0) {
-            if ($HLS[0] != 0 AND $HLS[1] != 0 and $HLS[2] != 0) {
+            if ($HLS[0] != 0 && $HLS[1] != 0 && $HLS[2] != 0) {
               $result = 'true';
             }
             else {
