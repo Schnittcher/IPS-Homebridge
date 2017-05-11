@@ -244,15 +244,16 @@ class IPS_HomebridgeRGB extends HomeKitService {
           case 'Brightness':
             $hue = $this->GetBuffer($Devices[$count]["DeviceName"]." Hue");
             $saturation = $this->GetBuffer($Devices[$count]["DeviceName"]." Saturation");
+            $brightness = $value;
             $this->SendDebug("setVar Brightness Buffer", $hue." ".$saturation,0);
             //Convert HSL to RGB
             $this->SendDebug("setVar Brightness value", $value,0);
 
             $hue /= 360;
             $saturation /= 100;
-            $value /= 100;
+            $brightness /= 100;
 
-            $rgb = $this->HSLToRGB($hue,$saturation,$value);
+            $rgb = $this->HSLToRGB($hue,$saturation,$brightness);
             $this->SendDebug("setVar Brightness rgb", $rgb["r"]." ".$rgb["g"]." ".$rgb["b"],0);
             //Convert RGB to Hex
             $hex = $this->rgb2hex($rgb);
@@ -266,6 +267,60 @@ class IPS_HomebridgeRGB extends HomeKitService {
 
             $this->SetValueToIPS($variable,$variableObject,$result);
             $this->SetBuffer($Devices[$count]["DeviceName"]." Brightness",$value);
+          break;
+          case 'Hue':
+            $hue = $value;
+            $saturation = $this->GetBuffer($Devices[$count]["DeviceName"]." Saturation");
+            $brightness = $this->GetBuffer($Devices[$count]["DeviceName"]." Brightness");
+            $this->SendDebug("setVar Brightness Buffer", $hue." ".$saturation,0);
+            //Convert HSL to RGB
+            $this->SendDebug("setVar Brightness value", $value,0);
+
+            $hue /= 360;
+            $saturation /= 100;
+            $brightness /= 100;
+
+            $rgb = $this->HSLToRGB($hue,$saturation,$brightness);
+            $this->SendDebug("setVar Brightness rgb", $rgb["r"]." ".$rgb["g"]." ".$rgb["b"],0);
+            //Convert RGB to Hex
+            $hex = $this->rgb2hex($rgb);
+            $this->SendDebug("setVar Brightness hex", $hex,0);
+            //Convert Hex to Decimal
+            $dec = hexdec($hex);
+            $this->SendDebug("setVar Brightness dec", $dec,0);
+            $variable = IPS_GetVariable($Device["VariableRGB"]);
+            $variableObject = IPS_GetObject($Device["VariableRGB"]);
+            $result = $this->ConvertVariable($variable, $dec);
+
+            $this->SetValueToIPS($variable,$variableObject,$result);
+            $this->SetBuffer($Devices[$count]["DeviceName"]." Hue",$value);
+          break;
+          case 'Saturation':
+            $hue = $this->GetBuffer($Devices[$count]["DeviceName"]." Hue");
+            $saturation = $value;
+            $brightness = $this->GetBuffer($Devices[$count]["DeviceName"]." Brightness");
+            $this->SendDebug("setVar Brightness Buffer", $hue." ".$saturation,0);
+            //Convert HSL to RGB
+            $this->SendDebug("setVar Brightness value", $value,0);
+
+            $hue /= 360;
+            $saturation /= 100;
+            $brightness /= 100;
+
+            $rgb = $this->HSLToRGB($hue,$saturation,$brightness);
+            $this->SendDebug("setVar Brightness rgb", $rgb["r"]." ".$rgb["g"]." ".$rgb["b"],0);
+            //Convert RGB to Hex
+            $hex = $this->rgb2hex($rgb);
+            $this->SendDebug("setVar Brightness hex", $hex,0);
+            //Convert Hex to Decimal
+            $dec = hexdec($hex);
+            $this->SendDebug("setVar Brightness dec", $dec,0);
+            $variable = IPS_GetVariable($Device["VariableRGB"]);
+            $variableObject = IPS_GetObject($Device["VariableRGB"]);
+            $result = $this->ConvertVariable($variable, $dec);
+
+            $this->SetValueToIPS($variable,$variableObject,$result);
+            $this->SetBuffer($Devices[$count]["DeviceName"]." Saturation",$value);
           break;
         }
       }
