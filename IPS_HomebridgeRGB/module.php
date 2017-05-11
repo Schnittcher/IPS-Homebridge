@@ -247,7 +247,12 @@ class IPS_HomebridgeRGB extends HomeKitService {
             $this->SendDebug("setVar Brightness Buffer", $hue." ".$saturation,0);
             //Convert HSL to RGB
             $this->SendDebug("setVar Brightness value", $value,0);
-            $rgb = $this->hslToRgb($hue,$saturation,$value);
+
+            $hue /= 360;
+            $saturation /= 100;
+            $value /= 100;
+
+            $rgb = $this->HSLToRGB($hue,$saturation,$value);
             $this->SendDebug("setVar Brightness rgb", $rgb[0]." ".$rgb[1]." ".$rgb[2],0);
             //Convert RGB to Hex
             $hex = $this->rgb2hex($rgb);

@@ -133,42 +133,65 @@ class HomeKitService extends IPSModule {
   	return array( round( $h, 2 ), round( $s, 2 ), round( $l, 2 ) );
   }
 
-  protected function hslToRgb( $h, $s, $l ){
-      $r;
-      $g;
-      $b;
-  	$c = ( 1 - abs( 2 * $l - 1 ) ) * $s;
-  	$x = $c * ( 1 - abs( fmod( ( $h / 60 ), 2 ) - 1 ) );
-  	$m = $l - ( $c / 2 );
-  	if ( $h < 60 ) {
-  		$r = $c;
-  		$g = $x;
-  		$b = 0;
-  	} else if ( $h < 120 ) {
-  		$r = $x;
-  		$g = $c;
-  		$b = 0;
-  	} else if ( $h < 180 ) {
-  		$r = 0;
-  		$g = $c;
-  		$b = $x;
-  	} else if ( $h < 240 ) {
-  		$r = 0;
-  		$g = $x;
-  		$b = $c;
-  	} else if ( $h < 300 ) {
-  		$r = $x;
-  		$g = 0;
-  		$b = $c;
-  	} else {
-  		$r = $c;
-  		$g = 0;
-  		$b = $x;
-  	}
-  	$r = ( $r + $m ) * 255;
-  	$g = ( $g + $m ) * 255;
-  	$b = ( $b + $m  ) * 255;
-      return array( floor( $r ), floor( $g ), floor( $b ) );
+  function HSLToRGB($h, $s, $l){
+
+          $r = $l;
+          $g = $l;
+          $b = $l;
+          $v = ($l <= 0.5) ? ($l * (1.0 + $s)) : ($l + $s - $l * $s);
+          if ($v > 0){
+                $m;
+                $sv;
+                $sextant;
+                $fract;
+                $vsf;
+                $mid1;
+                $mid2;
+
+                $m = $l + $l - $v;
+                $sv = ($v - $m ) / $v;
+                $h *= 6.0;
+                $sextant = floor($h);
+                $fract = $h - $sextant;
+                $vsf = $v * $sv * $fract;
+                $mid1 = $m + $vsf;
+                $mid2 = $v - $vsf;
+
+                switch ($sextant)
+                {
+                      case 0:
+                            $r = $v;
+                            $g = $mid1;
+                            $b = $m;
+                            break;
+                      case 1:
+                            $r = $mid2;
+                            $g = $v;
+                            $b = $m;
+                            break;
+                      case 2:
+                            $r = $m;
+                            $g = $v;
+                            $b = $mid1;
+                            break;
+                      case 3:
+                            $r = $m;
+                            $g = $mid2;
+                            $b = $v;
+                            break;
+                      case 4:
+                            $r = $mid1;
+                            $g = $m;
+                            $b = $v;
+                            break;
+                      case 5:
+                            $r = $v;
+                            $g = $m;
+                            $b = $mid2;
+                            break;
+                }
+          }
+          return array('r' => $r * 255.0, 'g' => $g * 255.0, 'b' => $b * 255.0);
   }
 
   protected function rgb2hex($rgb) {
