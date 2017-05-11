@@ -173,6 +173,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
           case 'Hue':
             //Lightbulb Hue abfragen
             $result = strval(dechex(GetValue($Device["VariableRGB"])));
+            $result = str_pad($result, 6, "0", STR_PAD_LEFT);
             $this->SendDebug("getVar Hue", $result,0);
             $RGB = $this->hex2rgb($result);
             $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
@@ -181,6 +182,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
         case 'Saturation':
           //Lightbulb Saturation abfragen
           $result = strval(dechex(GetValue($Device["VariableRGB"])));
+          $result = str_pad($result, 6, "0", STR_PAD_LEFT);
           $this->SendDebug("getVar Saturation", $result,0);
           $RGB = $this->hex2rgb($result);
           $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
@@ -189,6 +191,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
         case 'Brightness':
           //Lightbulb Brightness abfragen
           $result = strval(dechex(GetValue($Device["VariableRGB"])));
+          $result = str_pad($result, 6, "0", STR_PAD_LEFT);
           $this->SendDebug("getVar Brightness", $result,0);
           $RGB = $this->hex2rgb($result);
           $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
