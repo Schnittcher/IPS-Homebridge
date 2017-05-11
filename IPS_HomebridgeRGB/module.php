@@ -250,7 +250,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
             $rgb = $this->hslToRgb($hue,$saturation,$value);
             $this->SendDebug("setVar Brightness rgb", $rgb[0]." ".$rgb[1]." ".$rgb[2],0);
             //Convert RGB to Hex
-            $hex = $this->rgb2hex($rgb[0],$rgb[1],$rgb[2]);
+            $hex = $this->rgb2hex($rgb);
             $this->SendDebug("setVar Brightness hex", $hex,0);
             //Convert Hex to Decimal
             $dec = hexdec($hex);
