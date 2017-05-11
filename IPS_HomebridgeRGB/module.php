@@ -100,7 +100,10 @@ class IPS_HomebridgeRGB extends HomeKitService {
         if ($SenderID == $Device["VariableRGB"]) {
           $data = $Data[0];
 
-            $RGB = $this->hex2rgb(dechex($data));
+            $result = strval(dechex($data));
+            $result = str_pad($result, 6, "0", STR_PAD_LEFT);
+            $RGB = $this->hex2rgb($result);
+
             $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
             if ($HLS[0] < 0 AND $HLS[1] < 0 and $HLS[2] < 0) {
               $this->SendDebug("MessageSink aus", "false",0);
