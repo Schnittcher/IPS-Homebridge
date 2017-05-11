@@ -132,5 +132,50 @@ class HomeKitService extends IPSModule {
 
   	return array( round( $h, 2 ), round( $s, 2 ), round( $l, 2 ) );
   }
+
+  protected function hslToRgb( $h, $s, $l ){
+      $r;
+      $g;
+      $b;
+  	$c = ( 1 - abs( 2 * $l - 1 ) ) * $s;
+  	$x = $c * ( 1 - abs( fmod( ( $h / 60 ), 2 ) - 1 ) );
+  	$m = $l - ( $c / 2 );
+  	if ( $h < 60 ) {
+  		$r = $c;
+  		$g = $x;
+  		$b = 0;
+  	} else if ( $h < 120 ) {
+  		$r = $x;
+  		$g = $c;
+  		$b = 0;
+  	} else if ( $h < 180 ) {
+  		$r = 0;
+  		$g = $c;
+  		$b = $x;
+  	} else if ( $h < 240 ) {
+  		$r = 0;
+  		$g = $x;
+  		$b = $c;
+  	} else if ( $h < 300 ) {
+  		$r = $x;
+  		$g = 0;
+  		$b = $c;
+  	} else {
+  		$r = $c;
+  		$g = 0;
+  		$b = $x;
+  	}
+  	$r = ( $r + $m ) * 255;
+  	$g = ( $g + $m ) * 255;
+  	$b = ( $b + $m  ) * 255;
+      return array( floor( $r ), floor( $g ), floor( $b ) );
+  }
+
+  protected function rgb2hex($rgb) {
+     $hex = str_pad(dechex($rgb[0]), 2, "0", STR_PAD_LEFT);
+     $hex .= str_pad(dechex($rgb[1]), 2, "0", STR_PAD_LEFT);
+     $hex .= str_pad(dechex($rgb[2]), 2, "0", STR_PAD_LEFT);
+  
+     return $hex; // returns the hex value including the number sign (#)
 }
 ?>

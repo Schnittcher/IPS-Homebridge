@@ -43,11 +43,14 @@ class IPS_HomebridgeRGB extends HomeKitService {
         $Devices[$count]["VariableStateTrue"] = $this->ReadPropertyInteger("VariableStateTrue{$count}");
         $Devices[$count]["VariableStateFalse"] =  $this->ReadPropertyInteger("VariableStateFalse{$count}");
         $Devices[$count]["VariableRGB"] =  $this->ReadPropertyInteger("VariableRGB{$count}");
-        //$Devices[$count]["VariableBrightness"] = $this->ReadPropertyInteger("VariableBrightness{$count}");
-        //$Devices[$count]["VariableBrightnessMax"] = $this->ReadPropertyInteger("VariableBrightnessMax{$count}");
-        //$Devices[$count]["VariableBrightnessOptional"] = $this->ReadPropertyBoolean("VariableBrightnessOptional{$count}");
         $BufferNameState = $Devices[$count]["DeviceName"]." State";
         $BufferNameRGB = $Devices[$count]["DeviceName"]." RGB";
+
+        //Buffer für Hure, Saturation und Brightness
+        $BufferNameHue = $Devices[$count]["DeviceName"]." Hue";
+        $BufferNameSaturation = $Devices[$count]["DeviceName"]." Saturation";
+        $BufferNameBrightness = $Devices[$count]["DeviceName"]." Brightness";
+
         //Alte Registrierungen auf Variablen Veränderung aufheben
         $UnregisterBufferIDs = [];
         array_push($UnregisterBufferIDs,$this->GetBuffer($BufferNameState));
@@ -62,6 +65,7 @@ class IPS_HomebridgeRGB extends HomeKitService {
           //Buffer mit den aktuellen Variablen IDs befüllen für State und Brightness
           $this->SetBuffer($BufferNameState,$Devices[$count]["VariableState"]);
           $this->SetBuffer($BufferNameRGB,$Devices[$count]["VariableRGB"]);
+
           $this->addAccessory($Devices[$count]["DeviceName"]);
         } else {
           return;
@@ -107,6 +111,11 @@ class IPS_HomebridgeRGB extends HomeKitService {
             $HLS = $this->rgbToHsl($RGB[0],$RGB[1],$RGB[2]);
             if ($HLS[0] < 0 AND $HLS[1] < 0 and $HLS[2] < 0) {
               $this->SendDebug("MessageSink aus", "false",0);
+              //Buffer HSL Test
+              $this->SetBuffer($Devices[$count]["DeviceName"]." Hue",0);
+              $this->SetBuffer($Devices[$count]["DeviceName"]." Saturation",0);
+              $this->SetBuffer($Devices[$count]["DeviceName"]." Brightness",0);
+
               $this->sendJSONToParent("setValue", "Hue", $DeviceName, 0);
               $this->sendJSONToParent("setValue", "Saturation", $DeviceName, 0);
               $this->sendJSONToParent("setValue", "Brightness", $DeviceName, 0);
@@ -114,6 +123,11 @@ class IPS_HomebridgeRGB extends HomeKitService {
             }
             else {
               $this->SendDebug("MessageSink an", "true",0);
+              //Buffer HSL Test
+              $this->SetBuffer($Devices[$count]["DeviceName"]." Hue",$HLS[0]);
+              $this->SetBuffer($Devices[$count]["DeviceName"]." Saturation",$HLS[1]);
+              $this->SetBuffer($Devices[$count]["DeviceName"]." Brightness",$HLS[2]);
+
               $this->sendJSONToParent("setValue", "Hue", $DeviceName, number_format($HLS[0], 2, '.', ''));
               $this->sendJSONToParent("setValue", "Saturation", $DeviceName, number_format($HLS[1], 2, '.', ''));
               $this->sendJSONToParent("setValue", "Brightness", $DeviceName, number_format($HLS[2], 2, '.', ''));
@@ -133,9 +147,6 @@ class IPS_HomebridgeRGB extends HomeKitService {
     for($count = 1; $count-1 < $anzahl; $count++) {
       $form .= '{ "type": "ValidationTextBox", "name": "DeviceName'.$count.'", "caption": "Gerätename für die Homebridge" },';
       $form .= '{ "type": "SelectInstance", "name": "RGBID'.$count.'", "caption": "Gerät" },';
-      //$form .= '{ "type": "SelectVariable", "name": "VariableState'.$count.'", "caption": "Status" },';
-      //$form .= '{ "type": "ValidationTextBox", "name": "VariableStateTrue'.$count.'", "caption": "Value True (On)" },';
-      //$form .= '{ "type": "ValidationTextBox", "name": "VariableStateFalse'.$count.'", "caption": "Value False (Off)" },';
       $form .= '{ "type": "SelectVariable", "name": "VariableRGB'.$count.'", "caption": "RGB" },';
       $form .= '{ "type": "Button", "label": "Löschen", "onClick": "echo HBRGB_removeAccessory('.$this->InstanceID.','.$count.');" },';
       if ($count == $anzahl) {
@@ -166,7 +177,6 @@ class IPS_HomebridgeRGB extends HomeKitService {
             $this->SendDebug("getVar On getType",gettype($HLS[0]),0);
             $this->SendDebug("getVar On", $HLS[0]." ".$HLS[1]." ".$HLS[2],0);
             if ($result != "000000") {
-            //if ($HLS[0] != 0.0 && $HLS[1] != 0.0 && $HLS[2] != 0.0) {
               $result = 'true';
             }
             else {
@@ -232,7 +242,23 @@ class IPS_HomebridgeRGB extends HomeKitService {
             $this->SetValueToIPS($variable,$variableObject,$result);
             break;
           case 'Brightness':
-            break;
+            $hue = $this->GetBuffer($Devices[$count]["DeviceName"]." Hue");
+            $saturation = $this->GetBuffer($Devices[$count]["DeviceName"]." Saturation");
+
+            //Convert HSL to RGB
+            $rgb = $this->hslToRgb($hue,$saturation,$value);
+            //Convert RGB to Hex
+            $hex = $this->rgb2hex($rgb[0],$rgb[1],$rgb[2]);
+            //Convert Hex to Decimal
+            $dec = hexdec($hex);
+
+            $variable = IPS_GetVariable($Device["VariableRGB"]);
+            $variableObject = IPS_GetObject($Device["VariableRGB"]);
+            $result = $this->ConvertVariable($variable, $dec);
+
+            $this->SetValueToIPS($variable,$variableObject,$result);
+            $this->SetBuffer($Devices[$count]["DeviceName"]." Brightness",$value);
+          break;
         }
       }
     }
