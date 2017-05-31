@@ -20,18 +20,22 @@ Deshalb gibt es einen Fork für dieses Plugin und die Änderungen können an die
 
 Websocket Modul von Nall Chan:
 ```https://github.com/Nall-chan/IPSWebSockets.git
+
 ```
 IPS-Homebridge Modul:
 ```https://github.com/Schnittcher/IPS-Homebridge.git
+
 ```
 
 ### Installation der Homebridge inkl. Plugin
 
 ```sudo npm install -g homebridge
+
 ```
 
 Plugin Installation für die Homebridge:
 ```sudo npm install -g https://github.com/Schnittcher/homebridge-websocket.git
+
 ```
 
 ## Konfiguration der Homebridge
