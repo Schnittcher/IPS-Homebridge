@@ -9,8 +9,6 @@ Beispiel: "Siri, schalte das Deckenlicht im Wohnzimmer ein!"
 3. [Installation](#3-installation)
 4. [Konfiguration der Homebridge](#4-konfiguration-der-homebridge)
 5. [Einrichtung des eigentlichen IPS Homebridge Moduls](#5-einrichtung-des-eigentlichen-ips-homebridge-moduls)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 
 ## 1. Voraussetzungen
 
